@@ -52,6 +52,16 @@ const cardCompanies = [
 ];
 
 export default function Home() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "카드 가맹점 조회",
+    url: "https://card-store-id-checker.pages.dev/",
+    description:
+      "국내 9개 카드사의 공식 가맹점 번호 조회 페이지를 연결하는 바로가기 서비스",
+    inLanguage: "ko-KR",
+  };
+
   return (
     <main className="page-shell">
       <section className="directory" aria-labelledby="page-title">
@@ -61,11 +71,11 @@ export default function Home() {
             MERCHANT DIRECTORY
           </div>
           <h1 id="page-title">
-            카드 가맹점 번호를
+            카드사 가맹점 번호를
             <br />
             빠르게 확인하세요
           </h1>
-          <p>이용하실 카드사를 선택하면 공식 조회 페이지로 이동합니다.</p>
+          <p>카드사를 선택하면 공식 가맹점 번호 조회 페이지로 이동합니다.</p>
         </header>
 
         <div className="card-grid">
@@ -98,10 +108,18 @@ export default function Home() {
         </div>
 
         <footer>
-          <span aria-hidden="true">🔒</span>
-          각 카드사의 공식 웹사이트로 안전하게 연결됩니다.
+          <span>
+            <span aria-hidden="true">🔒</span> 각 카드사의 공식 웹사이트로 연결됩니다.
+          </span>
+          <a className="about-link" href="/about/">
+            서비스 소개
+          </a>
         </footer>
       </section>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
     </main>
   );
 }

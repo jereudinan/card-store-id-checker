@@ -178,10 +178,145 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
   margin-top: 13px;
   color: #96939c;
   font-size: 9px;
+}
+
+.about-link {
+  color: var(--brand);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.about-shell {
+  min-height: 100svh;
+  padding: 28px 18px;
+}
+
+.about-card {
+  width: min(100%, 820px);
+  margin: 0 auto;
+  padding: clamp(24px, 6vw, 56px);
+  border: 1px solid rgba(81, 79, 89, 0.07);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 18px 50px rgba(65, 62, 82, 0.08);
+}
+
+.about-nav {
+  display: flex;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.about-nav a {
+  color: var(--brand);
+  font-weight: 700;
+}
+
+.about-hero {
+  margin: 44px 0;
+}
+
+.about-kicker {
+  color: var(--brand);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.about-hero h1 {
+  margin-top: 10px;
+  font-size: clamp(30px, 7vw, 48px);
+}
+
+.about-hero p {
+  max-width: 650px;
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.about-section {
+  margin-top: 38px;
+}
+
+.about-section h2 {
+  margin: 0 0 14px;
+  color: #3f3d47;
+  font-size: 20px;
+}
+
+.feature-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.feature-list > div {
+  padding: 20px;
+  border-radius: 16px;
+  background: #f7f7fa;
+}
+
+.feature-list strong {
+  color: #45434c;
+  font-size: 14px;
+}
+
+.feature-list p,
+.notice-box p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.company-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.company-tags li {
+  padding: 8px 12px;
+  border: 1px solid rgba(109, 114, 195, 0.2);
+  border-radius: 999px;
+  color: var(--brand);
+  background: rgba(109, 114, 195, 0.06);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.notice-box {
+  padding: 20px;
+  border-left: 3px solid var(--brand);
+  border-radius: 0 14px 14px 0;
+  background: #f7f7fa;
+}
+
+.notice-box h2 {
+  font-size: 16px;
+}
+
+.primary-link {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  padding: 15px 20px;
+  border-radius: 14px;
+  color: white;
+  background: var(--brand);
+  font-size: 14px;
+  font-weight: 800;
 }
 
 @keyframes card-in {
@@ -275,6 +410,24 @@ footer {
 
   footer {
     margin-top: 7px;
+  }
+}
+
+@media (max-width: 620px) {
+  .about-shell {
+    padding: 12px;
+  }
+
+  .about-card {
+    border-radius: 18px;
+  }
+
+  .about-hero {
+    margin: 34px 0;
+  }
+
+  .feature-list {
+    grid-template-columns: 1fr;
   }
 }
 

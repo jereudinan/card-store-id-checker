@@ -9,9 +9,27 @@ test("creates a Cloudflare Pages static entry point", async () => {
   const html = await readFile(new URL("index.html", outputRoot), "utf8");
 
   assert.match(html, /<html lang="ko">/i);
-  assert.match(html, /<title>카드 가맹점 조회 바로가기<\/title>/i);
-  assert.match(html, /카드 가맹점 번호를/);
-  assert.match(html, /각 카드사의 공식 웹사이트로 안전하게 연결됩니다/);
+  assert.match(
+    html,
+    /<title>카드사 가맹점 조회 바로가기 \| 가맹점 번호 확인<\/title>/i,
+  );
+  assert.match(html, /카드사 가맹점 번호를/);
+  assert.match(html, /각 카드사의 공식 웹사이트로 연결됩니다/);
+  assert.match(html, /rel="canonical"/);
+  assert.match(html, /application\/ld\+json/);
+});
+
+test("exports the introduction page and SEO discovery files", async () => {
+  const [aboutHtml, robots, sitemap] = await Promise.all([
+    readFile(new URL("about/index.html", outputRoot), "utf8"),
+    readFile(new URL("robots.txt", outputRoot), "utf8"),
+    readFile(new URL("sitemap.xml", outputRoot), "utf8"),
+  ]);
+
+  assert.match(aboutHtml, /카드 가맹점 조회를 더 간편하게/);
+  assert.match(aboutHtml, /본 사이트는 카드사 또는 금융기관이 운영하는 공식 서비스가 아니며/);
+  assert.match(robots, /Allow: \//);
+  assert.match(sitemap, /card-store-id-checker\.pages\.dev\/about\//);
 });
 
 test("includes all nine official card-company links", async () => {
