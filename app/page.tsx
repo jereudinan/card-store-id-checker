@@ -1,3 +1,5 @@
+import DeviceAwareLink from "./device-aware-link";
+
 const cardCompanies = [
   {
     name: "비씨카드",
@@ -5,12 +7,14 @@ const cardCompanies = [
     logo: "/logos/bc.png",
     phone: "1588-4500",
     url: "https://www.bccard.com/app/merchant/StoreNoInqActn.do",
+    mobileUrl: "https://merchant.bccard.com/app/merchant/StoreNoInqActn.do",
   },
   {
     name: "하나카드",
     short: "1Q",
     phone: "1800-1111",
     url: "https://www.hanacard.co.kr/OMA25000000M.web?schID=mcd&mID=OMA25000000M",
+    mobileUrl: "https://www.hanacard.co.kr/MA25000000M.web",
   },
   {
     name: "신한카드",
@@ -18,6 +22,7 @@ const cardCompanies = [
     logo: "/logos/shinhan.png",
     phone: "1544-7000",
     url: "https://www.shinhancard.com/hpe/HPEINFON/mchtNA01List.shc",
+    mobileUrl: "https://www.shinhancard.com/hpe/HPEINFON/mchtNA01List.shc",
   },
   {
     name: "국민카드",
@@ -25,24 +30,28 @@ const cardCompanies = [
     logo: "/logos/kb.png",
     phone: "1588-1788",
     url: "https://biz.kbcard.com/CXERFMGC0009.cms",
+    mobileUrl: "https://biz.kbcard.com/CXERFMGC0009.cms",
   },
   {
     name: "삼성카드",
     short: "S",
     phone: "1588-8700",
     url: "https://www.samsungcard.com/merchant/number/UHPMMM0101M0.jsp",
+    mobileUrl: "https://www.samsungcard.com/merchant/number/UHPMMM0101M0.jsp",
   },
   {
     name: "현대카드",
     short: "H",
     phone: "1577-6000",
     url: "https://www.hyundaicard.com/csa/mb/STOREMAIN.hc",
+    mobileUrl: "https://www.hyundaicard.com/csa/mb/STOREMAIN.hc",
   },
   {
     name: "롯데카드",
     short: "L",
     phone: "1588-8100",
     url: "https://merchant.lottecard.co.kr/app/LMSVCFA_V100.lc",
+    mobileUrl: "https://merchant.lottecard.co.kr/app/LMSVCFA_V100.lc",
   },
   {
     name: "우리카드",
@@ -50,6 +59,7 @@ const cardCompanies = [
     logo: "/logos/woori.png",
     phone: "1588-9955",
     url: "https://pc.wooricard.com/dcpc/yh3/mc/bcd/bcd05/H3BCD205S00.do",
+    mobileUrl: "https://pc.wooricard.com/dcpc/yh3/mc/bcd/bcd05/H3BCD205S00.do",
   },
   {
     name: "농협카드",
@@ -57,6 +67,7 @@ const cardCompanies = [
     logo: "/logos/nh.png",
     phone: "1644-7400",
     url: "https://nhbizcard.nonghyup.com/imcn1000m.act",
+    mobileUrl: "https://m.nhbizcard.nonghyup.com/imcn1000m.act",
   },
 ];
 
@@ -114,16 +125,11 @@ export default function Home() {
                   {company.phone}
                 </a>
               </div>
-              <a
-                className="lookup-button"
-                href={company.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${company.name} 가맹점 조회 페이지 새 창으로 열기`}
-              >
-                가맹점 조회
-                <span aria-hidden="true">↗</span>
-              </a>
+              <DeviceAwareLink
+                companyName={company.name}
+                desktopUrl={company.url}
+                mobileUrl={company.mobileUrl}
+              />
             </article>
           ))}
         </div>

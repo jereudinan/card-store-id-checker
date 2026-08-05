@@ -74,3 +74,11 @@ test("includes card-company phone links and lookup buttons", async () => {
 
   assert.equal((html.match(/class="lookup-button"/g) ?? []).length, 9);
 });
+
+test("includes verified mobile merchant lookup destinations", async () => {
+  const html = await readFile(new URL("index.html", outputRoot), "utf8");
+
+  assert.match(html, /merchant\.bccard\.com\/app\/merchant\/StoreNoInqActn\.do/);
+  assert.match(html, /hanacard\.co\.kr\/MA25000000M\.web/);
+  assert.match(html, /m\.nhbizcard\.nonghyup\.com\/imcn1000m\.act/);
+});
