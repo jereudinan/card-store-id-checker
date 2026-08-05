@@ -41,9 +41,9 @@ export default function AboutPage() {
     <main className="about-shell">
       <article className="about-card">
         <nav className="about-nav" aria-label="주요 메뉴">
-          <a href="/">카드사 조회</a>
+          <a href="/">가맹점 조회</a>
           <span aria-hidden="true">/</span>
-          <strong>서비스 소개</strong>
+          <strong>사이트 소개</strong>
         </nav>
 
         <header className="about-hero">
@@ -89,6 +89,17 @@ export default function AboutPage() {
             가맹점 조회를 돕기 위해 공식 웹사이트 링크를 정리해 제공합니다.
             조회 결과와 세부 이용 조건은 이동한 카드사 홈페이지에서 확인해 주세요.
           </p>
+        </section>
+
+        <section className="about-section contact-box">
+          <div>
+            <span className="contact-label">CONTACT</span>
+            <h2>문의하기</h2>
+            <p>사이트 이용 중 궁금한 점이나 수정이 필요한 정보가 있다면 이메일로 알려주세요.</p>
+          </div>
+          <a href="mailto:rodiscarry@gmail.com" aria-label="문의 이메일 보내기">
+            rodiscarry@gmail.com
+          </a>
         </section>
 
         <a className="primary-link" href="/">

@@ -65,6 +65,12 @@ export default function Home() {
   return (
     <main className="page-shell">
       <section className="directory" aria-labelledby="page-title">
+        <nav className="site-nav" aria-label="주요 메뉴">
+          <a href="/" aria-current="page">
+            가맹점 조회
+          </a>
+          <a href="/about/">사이트 소개</a>
+        </nav>
         <header className="hero">
           <div className="eyebrow">
             <span className="eyebrow-dot" aria-hidden="true" />
@@ -111,9 +117,6 @@ export default function Home() {
           <span>
             <span aria-hidden="true">🔒</span> 각 카드사의 공식 웹사이트로 연결됩니다.
           </span>
-          <a className="about-link" href="/about/">
-            서비스 소개
-          </a>
         </footer>
       </section>
       <script

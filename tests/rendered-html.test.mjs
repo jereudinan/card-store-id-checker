@@ -17,6 +17,7 @@ test("creates a Cloudflare Pages static entry point", async () => {
   assert.match(html, /각 카드사의 공식 웹사이트로 연결됩니다/);
   assert.match(html, /rel="canonical"/);
   assert.match(html, /application\/ld\+json/);
+  assert.match(html, /사이트 소개/);
 });
 
 test("exports the introduction page and SEO discovery files", async () => {
@@ -28,6 +29,8 @@ test("exports the introduction page and SEO discovery files", async () => {
 
   assert.match(aboutHtml, /카드 가맹점 조회를 더 간편하게/);
   assert.match(aboutHtml, /본 사이트는 카드사 또는 금융기관이 운영하는 공식 서비스가 아니며/);
+  assert.match(aboutHtml, /mailto:rodiscarry@gmail\.com/);
+  assert.match(aboutHtml, /사이트 이용 중 궁금한 점이나 수정이 필요한 정보/);
   assert.match(robots, /Allow: \//);
   assert.match(sitemap, /card-store-id-checker\.pages\.dev\/about\//);
 });
