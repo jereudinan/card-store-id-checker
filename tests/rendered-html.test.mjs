@@ -53,3 +53,24 @@ test("includes all nine official card-company links", async () => {
     assert.match(html, new RegExp(link.replaceAll(".", "\\.")));
   }
 });
+
+test("includes card-company phone links and lookup buttons", async () => {
+  const html = await readFile(new URL("index.html", outputRoot), "utf8");
+  const phoneNumbers = [
+    "15884500",
+    "18001111",
+    "15447000",
+    "15881788",
+    "15888700",
+    "15776000",
+    "15888100",
+    "15889955",
+    "16447400",
+  ];
+
+  for (const phone of phoneNumbers) {
+    assert.match(html, new RegExp(`href="tel:${phone}"`));
+  }
+
+  assert.equal((html.match(/class="lookup-button"/g) ?? []).length, 9);
+});
