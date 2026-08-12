@@ -1,0 +1,103 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                               
+
+<!doctype html>
+<html lang="ko" >
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="pragma" content="no-cache">
+<meta name="description" content="">
+<meta name="keywords" content="">
+<meta name="twitter:title" content=" 롯데카드">
+<meta name="twitter:description" content="듣다 바꾸다, 롯데카드">
+<meta name="twitter:image" content="https://www.lottecard.co.kr/images/common/lottecard_logo_big.jpg">
+<meta name="og:image" property="og:image" content="https://www.lottecard.co.kr/images/common/lottecard_logo_big.jpg">
+<meta property="og:title" content="" />
+<meta property="og:description" content="" />
+
+	<title>
+				
+				페이지를 찾을 수 없습니다.
+			롯데카드 가맹점 - </title>
+	<link rel="shortcut icon" href="//image.lottecard.co.kr/webapp/pc/images/favicon/favicon.ico">
+    <link href="//image.lottecard.co.kr/webapp/pc/css/p_font.css" rel="stylesheet" type="text/css">
+    <link href="//image.lottecard.co.kr/webapp/pc/css/p_common.css" rel="stylesheet" type="text/css">
+    <link href="//image.lottecard.co.kr/webapp/pc/css/p_contents.css" rel="stylesheet" type="text/css">
+     <link href="//image.lottecard.co.kr/webapp/pc/css/p_shop.css" rel="stylesheet" type="text/css">
+    
+    <script type="text/javascript">
+    var gvImgUrl = "//image.lottecard.co.kr";
+    </script>
+               
+    <script type="text/javascript" src="//image.lottecard.co.kr/webapp/pc/js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript" src="//image.lottecard.co.kr/webapp/pc/js/jquery-ui.min.js"></script>  
+    <script type="text/javascript" src="//image.lottecard.co.kr/webapp/pc/js/eiwaf/eiwaf-1.0.0.js" charset="utf-8"></script>    
+    
+    <script type="text/javascript" src="/js/util.biz.js" charset="utf-8"></script> 
+    <script type="text/javascript" src="//image.lottecard.co.kr/webapp/pc/js/util.comn.js" charset="utf-8"></script>
+    <script type="text/javascript" src="//image.lottecard.co.kr/webapp/pc/js/jquery.jscrollpane.min.js"></script>
+    <script type="text/javascript" src="//image.lottecard.co.kr/webapp/pc/js/p_selectbox.js"></script>
+    <script type="text/javascript" src="/js/merc-cmm.js" charset="utf-8"></script>    
+    <script type="text/javascript" src="/js/eiwaf/eiwaf.timer.js" charset="utf-8"></script>   
+	<script type="text/javascript">
+	//<![CDATA[
+		//PrintObjectTag();
+		var gvLayoutDefUrl = "";
+		$(function() {
+			eiwaf_InitDocumentReady({"code":0,"msgCode":"STATUS.New","message":""});
+		});
+	//]]>
+	</script>
+</head>
+
+<!--[if ie 8]><body class="lt-ie8"><![endif]-->
+<!--[if ie 9]><body class="lt-ie9"><![endif]-->
+<!--[if gte ie 10]><body class="lt-ie10"><![endif]-->
+<body>
+	
+	   
+		
+
+
+<div class="errorBox">
+    <div class="inner">
+        <h2 class="tit" role="text">서비스 이용에 불편을 드려 대단히 죄송합니다.</h2>
+            
+        <p class="txt" role="text">요청하신 페이지를 찾을 수가 없습니다.<br>찾으시는 페이지가 변경 혹은 삭제되어 페이지를 찾을 수 없습니다.</p>
+        
+        <div class="btnArea">                  
+            <a href="/index.jsp" class="btnLP btnL action" title="롯데카드 홈페이지 이동" >롯데카드 홈페이지</a>
+        </div>
+    </div>
+</div>
+
+
+	
+</body>
+<script type="text/javascript" src="//image.lottecard.co.kr/webapp/pc/js/p_script_LP.js"></script>
+
+ 
+
+</html>
