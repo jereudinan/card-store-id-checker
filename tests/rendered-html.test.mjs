@@ -44,6 +44,8 @@ test("exports the card fee calculator with current preferred rates", async () =>
   assert.match(html, /0\.40%/);
   assert.match(html, /1\.45%/);
   assert.match(html, /금융위원회/);
+  assert.match(html, /입력값 초기화/);
+  assert.doesNotMatch(html, /MERCHANT TOOL|STEP 1|RESULT|2026 GUIDE/);
   assert.match(html, /application\/ld\+json/);
 });
 

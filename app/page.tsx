@@ -94,10 +94,6 @@ export default function Home() {
           <Link href="/about/">사이트 소개</Link>
         </nav>
         <header className="hero">
-          <div className="eyebrow">
-            <span className="eyebrow-dot" aria-hidden="true" />
-            MERCHANT DIRECTORY
-          </div>
           <h1 id="page-title">
             카드사 가맹점 번호를
             <br />

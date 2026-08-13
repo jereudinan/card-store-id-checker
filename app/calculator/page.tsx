@@ -37,7 +37,6 @@ export default function CalculatorPage() {
         </nav>
 
         <header className="calculator-hero">
-          <div className="eyebrow"><span className="eyebrow-dot" aria-hidden="true" />MERCHANT TOOL</div>
           <h1>카드 수수료,<br />미리 계산해 보세요</h1>
           <p>신용·체크카드 매출을 입력하면 예상 수수료와 실제 입금액을 한눈에 확인할 수 있습니다.</p>
         </header>
@@ -45,7 +44,7 @@ export default function CalculatorPage() {
         <CardFeeCalculator />
 
         <section className="fee-guide" aria-labelledby="fee-guide-title">
-          <div className="section-heading"><span>2026 GUIDE</span><h2 id="fee-guide-title">영세·중소가맹점 우대수수료율</h2></div>
+          <div className="section-heading"><h2 id="fee-guide-title">2026년 영세·중소가맹점 우대수수료율</h2></div>
           <div className="fee-table-wrap">
             <table>
               <thead><tr><th>연매출 구간</th><th>신용카드</th><th>체크카드</th></tr></thead>

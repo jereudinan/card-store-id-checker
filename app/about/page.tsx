@@ -50,7 +50,6 @@ export default function AboutPage() {
         </nav>
 
         <header className="about-hero">
-          <span className="about-kicker">ABOUT THIS SERVICE</span>
           <h1>카드 가맹점 조회를 더 간편하게</h1>
           <p>
             여러 카드사 홈페이지를 일일이 검색하지 않아도, 필요한 공식 가맹점
@@ -96,7 +95,6 @@ export default function AboutPage() {
 
         <section className="about-section contact-box">
           <div>
-            <span className="contact-label">CONTACT</span>
             <h2>문의하기</h2>
             <p>사이트 이용 중 궁금한 점이나 수정이 필요한 정보가 있다면 이메일로 알려주세요.</p>
           </div>

@@ -37,6 +37,14 @@ export default function CardFeeCalculator() {
   const creditRate = isCustom ? Number(customCreditRate) || 0 : tier.creditRate;
   const debitRate = isCustom ? Number(customDebitRate) || 0 : tier.debitRate;
 
+  function resetCalculator() {
+    setTierId(feeTiers[0].id);
+    setCreditSales("");
+    setDebitSales("");
+    setCustomCreditRate("2.0");
+    setCustomDebitRate("1.5");
+  }
+
   const result = useMemo(() => {
     const credit = toNumber(creditSales);
     const debit = toNumber(debitSales);
@@ -61,7 +69,6 @@ export default function CardFeeCalculator() {
     <div className="calculator-grid">
       <section className="calculator-panel" aria-labelledby="calculator-form-title">
         <div className="section-heading">
-          <span>STEP 1</span>
           <h2 id="calculator-form-title">매출 정보를 입력하세요</h2>
         </div>
 
@@ -107,12 +114,16 @@ export default function CardFeeCalculator() {
             <span className="money-input"><input inputMode="numeric" value={debitSales} onChange={(event) => setDebitSales(formatInput(event.target.value))} aria-describedby="sales-unit" /><span>원</span></span>
           </label>
         </div>
-        <p id="sales-unit" className="field-help">조회하려는 기간의 카드 매출액을 입력하세요.</p>
+        <div className="calculator-actions">
+          <p id="sales-unit" className="field-help">조회하려는 기간의 카드 매출액을 입력하세요.</p>
+          <button type="button" className="reset-button" onClick={resetCalculator}>
+            입력값 초기화
+          </button>
+        </div>
       </section>
 
       <section className="result-panel" aria-labelledby="calculator-result-title" aria-live="polite">
         <div className="section-heading light">
-          <span>RESULT</span>
           <h2 id="calculator-result-title">예상 카드 수수료</h2>
         </div>
         <strong className="total-fee">{won.format(result.totalFee)}</strong>
