@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 type DeviceAwareLinkProps = {
   companyName: string;
   desktopUrl: string;
@@ -22,16 +20,13 @@ export default function DeviceAwareLink({
   desktopUrl,
   mobileUrl,
 }: DeviceAwareLinkProps) {
-  const [href, setHref] = useState(desktopUrl);
-
-  useEffect(() => {
-    setHref(isMobileDevice() ? mobileUrl : desktopUrl);
-  }, [desktopUrl, mobileUrl]);
-
   return (
     <a
       className="lookup-button"
-      href={href}
+      href={desktopUrl}
+      onClick={(event) => {
+        event.currentTarget.href = isMobileDevice() ? mobileUrl : desktopUrl;
+      }}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`${companyName} 가맹점 조회 페이지 새 창으로 열기`}

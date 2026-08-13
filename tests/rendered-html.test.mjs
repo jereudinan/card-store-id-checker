@@ -33,6 +33,18 @@ test("exports the introduction page and SEO discovery files", async () => {
   assert.match(aboutHtml, /사이트 이용 중 궁금한 점이나 수정이 필요한 정보/);
   assert.match(robots, /Allow: \//);
   assert.match(sitemap, /card-store-id-checker\.pages\.dev\/about\//);
+  assert.match(sitemap, /card-store-id-checker\.pages\.dev\/calculator\//);
+});
+
+test("exports the card fee calculator with current preferred rates", async () => {
+  const html = await readFile(new URL("calculator/index.html", outputRoot), "utf8");
+
+  assert.match(html, /카드 수수료 계산기/);
+  assert.match(html, /3억원 이하/);
+  assert.match(html, /0\.40%/);
+  assert.match(html, /1\.45%/);
+  assert.match(html, /금융위원회/);
+  assert.match(html, /application\/ld\+json/);
 });
 
 test("includes all nine official card-company links", async () => {

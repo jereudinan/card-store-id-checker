@@ -1,4 +1,5 @@
 import DeviceAwareLink from "./device-aware-link";
+import Link from "next/link";
 
 const cardCompanies = [
   {
@@ -86,10 +87,11 @@ export default function Home() {
     <main className="page-shell">
       <section className="directory" aria-labelledby="page-title">
         <nav className="site-nav" aria-label="주요 메뉴">
-          <a href="/" aria-current="page">
+          <Link href="/" aria-current="page">
             가맹점 조회
-          </a>
-          <a href="/about/">사이트 소개</a>
+          </Link>
+          <Link href="/calculator/">수수료 계산기</Link>
+          <Link href="/about/">사이트 소개</Link>
         </nav>
         <header className="hero">
           <div className="eyebrow">

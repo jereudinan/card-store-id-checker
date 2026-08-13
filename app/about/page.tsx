@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "서비스 소개",
@@ -41,7 +42,9 @@ export default function AboutPage() {
     <main className="about-shell">
       <article className="about-card">
         <nav className="about-nav" aria-label="주요 메뉴">
-          <a href="/">가맹점 조회</a>
+          <Link href="/">가맹점 조회</Link>
+          <span aria-hidden="true">/</span>
+          <Link href="/calculator/">수수료 계산기</Link>
           <span aria-hidden="true">/</span>
           <strong>사이트 소개</strong>
         </nav>
@@ -102,9 +105,9 @@ export default function AboutPage() {
           </a>
         </section>
 
-        <a className="primary-link" href="/">
+        <Link className="primary-link" href="/">
           카드사별 가맹점 조회하기
-        </a>
+        </Link>
       </article>
       <script
         type="application/ld+json"
