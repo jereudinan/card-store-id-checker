@@ -16,6 +16,8 @@ type BusinessStatus = {
   rbf_tax_type_cd: string;
 };
 
+const NOT_FOUND_MESSAGE = "조회되지 않는 사업자 번호입니다. 정확한 사업자 번호를 입력해 주세요.";
+
 function formatBusinessNumber(value: string) {
   const digits = value.replace(/\D/g, "").slice(0, 10);
   if (digits.length <= 3) return digits;
@@ -56,7 +58,9 @@ export default function BusinessStatusChecker() {
       if (!response.ok || !payload.data) throw new Error(payload.error || "조회에 실패했습니다.");
       setResult(payload.data);
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "잠시 후 다시 시도해 주세요.");
+      const message = requestError instanceof Error ? requestError.message : "잠시 후 다시 시도해 주세요.";
+      setError(message);
+      if (message === NOT_FOUND_MESSAGE) window.alert(message);
     } finally {
       setLoading(false);
     }

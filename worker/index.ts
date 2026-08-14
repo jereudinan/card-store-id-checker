@@ -48,7 +48,11 @@ const worker = {
         const upstream = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ b_no: [bNo] }) });
         const payload = await upstream.json() as { data?: unknown[]; status_code?: string };
         if (!upstream.ok || !payload.data?.[0]) return Response.json({ error: "국세청에서 조회 결과를 받지 못했습니다." }, { status: 502 });
-        return Response.json({ data: payload.data[0] }, { headers: { "Cache-Control": "no-store" } });
+        const result = payload.data[0] as { b_stt_cd?: string; tax_type?: string };
+        if (!result.b_stt_cd || result.tax_type?.includes("등록되지 않은")) {
+          return Response.json({ error: "조회되지 않는 사업자 번호입니다. 정확한 사업자 번호를 입력해 주세요." }, { status: 404 });
+        }
+        return Response.json({ data: result }, { headers: { "Cache-Control": "no-store" } });
       } catch {
         return Response.json({ error: "조회 중 일시적인 오류가 발생했습니다." }, { status: 500 });
       }
