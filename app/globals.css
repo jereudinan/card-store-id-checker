@@ -527,6 +527,21 @@ footer {
   margin: 12px 0 22px;
 }
 
+.tier-message {
+  margin: 10px 0 0;
+  padding: 11px 13px;
+  border-radius: 10px;
+  color: #66636e;
+  background: #f7f7fa;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.tier-message.needs-check {
+  color: #675f3e;
+  background: #fff9e8;
+}
+
 .rate-summary > div {
   display: flex;
   align-items: center;
@@ -677,12 +692,60 @@ footer {
 }
 
 .fee-guide,
-.calculator-notice {
+.calculator-notice,
+.grade-lookup {
   margin-top: 24px;
   padding: clamp(22px, 5vw, 36px);
   border: 1px solid rgba(81, 79, 89, 0.07);
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.94);
+}
+
+.grade-lookup {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 26px;
+  border-color: rgba(109, 114, 195, 0.18);
+  background: rgba(109, 114, 195, 0.06);
+}
+
+.grade-lookup h2 {
+  margin: 0;
+  color: #3f3d47;
+  font-size: 18px;
+}
+
+.grade-lookup p {
+  max-width: 590px;
+  margin: 9px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.lookup-links {
+  flex: 0 0 auto;
+  display: grid;
+  gap: 8px;
+  min-width: 170px;
+}
+
+.lookup-links a {
+  padding: 10px 13px;
+  border: 1px solid rgba(109, 114, 195, 0.2);
+  border-radius: 10px;
+  color: var(--brand);
+  background: white;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.lookup-links a:hover,
+.lookup-links a:focus-visible {
+  border-color: var(--brand);
+  outline: none;
 }
 
 .fee-table-wrap {
@@ -704,7 +767,9 @@ footer {
 }
 
 .fee-guide th:first-child,
-.fee-guide td:first-child {
+.fee-guide td:first-child,
+.fee-guide th:nth-child(2),
+.fee-guide td:nth-child(2) {
   text-align: left;
 }
 
@@ -714,7 +779,7 @@ footer {
   font-size: 10px;
 }
 
-.fee-guide td:not(:first-child) {
+.fee-guide td:nth-child(n + 3) {
   color: var(--brand);
   font-weight: 800;
 }
@@ -848,6 +913,15 @@ footer {
   .calculator-grid {
     grid-template-columns: 1fr;
     border-radius: 18px;
+  }
+
+  .grade-lookup {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .lookup-links {
+    width: 100%;
   }
 
   .sales-input-grid,
