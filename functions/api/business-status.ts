@@ -1,3 +1,5 @@
+import { extractPublicDataError } from "../../lib/public-data-errors";
+
 interface Env {
   DATA_GO_KR_SERVICE_KEY?: string;
 }
@@ -32,9 +34,11 @@ export async function onRequestPost({ request, env }: PagesContext) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ b_no: [bNo] }),
     });
-    const payload = await upstream.json() as { data?: unknown[] };
+    const payload = await upstream.json() as { data?: unknown[]; status_code?: string; message?: string };
     if (!upstream.ok || !payload.data?.[0]) {
-      return Response.json({ error: "국세청에서 조회 결과를 받지 못했습니다." }, { status: 502 });
+      const apiError = extractPublicDataError(payload as unknown as Record<string, unknown>);
+      console.error("Business status API error", { code: apiError.code, detail: apiError.detail });
+      return Response.json({ error: apiError.message }, { status: apiError.status });
     }
 
     const result = payload.data[0] as { b_stt_cd?: string; tax_type?: string };

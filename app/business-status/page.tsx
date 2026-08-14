@@ -17,6 +17,7 @@ export default function BusinessStatusPage() {
           <Link href="/">가맹점 조회</Link>
           <Link href="/calculator/">수수료 계산기</Link>
           <Link href="/business-status/" aria-current="page">사업자 상태 조회</Link>
+          <Link href="/competitors/">주변 경쟁업체</Link>
           <Link href="/about/">사이트 소개</Link>
         </nav>
         <header className="business-status-hero">

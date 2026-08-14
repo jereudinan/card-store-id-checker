@@ -47,6 +47,7 @@ export default function AboutPage() {
           <Link href="/calculator/">수수료 계산기</Link>
           <span aria-hidden="true">/</span>
           <Link href="/business-status/">사업자 상태 조회</Link>
+          <Link href="/competitors/">주변 경쟁업체</Link>
           <span aria-hidden="true">/</span>
           <strong>사이트 소개</strong>
         </nav>
