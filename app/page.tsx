@@ -91,6 +91,7 @@ export default function Home() {
             가맹점 조회
           </Link>
           <Link href="/calculator/">수수료 계산기</Link>
+          <Link href="/business-status/">사업자 상태 조회</Link>
           <Link href="/about/">사이트 소개</Link>
         </nav>
         <header className="hero">

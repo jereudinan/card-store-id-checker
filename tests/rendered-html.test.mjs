@@ -54,6 +54,14 @@ test("exports the card fee calculator with current preferred rates", async () =>
   assert.match(html, /application\/ld\+json/);
 });
 
+test("exports the business registration status checker", async () => {
+  const html = await readFile(new URL("business-status/index.html", outputRoot), "utf8");
+  assert.match(html, /사업자등록 상태 조회/);
+  assert.match(html, /계속사업자·휴업자·폐업자/);
+  assert.match(html, /공공데이터포털/);
+  assert.match(html, /조회되지 않는 정보/);
+});
+
 test("includes all nine official card-company links", async () => {
   const html = await readFile(new URL("index.html", outputRoot), "utf8");
   const expectedLinks = [

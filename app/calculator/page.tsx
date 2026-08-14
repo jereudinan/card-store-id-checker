@@ -33,6 +33,7 @@ export default function CalculatorPage() {
         <nav className="site-nav calculator-nav" aria-label="주요 메뉴">
           <Link href="/">가맹점 조회</Link>
           <Link href="/calculator/" aria-current="page">수수료 계산기</Link>
+          <Link href="/business-status/">사업자 상태 조회</Link>
           <Link href="/about/">사이트 소개</Link>
         </nav>
 
