@@ -78,10 +78,11 @@ test("translates business status API codes into friendly labels", async () => {
 });
 
 test("exports the nearby competitor lookup page", async () => {
-  const [html, checker, errors] = await Promise.all([
+  const [html, checker, errors, nearbyApi] = await Promise.all([
     readFile(new URL("competitors/index.html", outputRoot), "utf8"),
     readFile(new URL("../app/competitors/competitor-checker.tsx", import.meta.url), "utf8"),
     readFile(new URL("../lib/public-data-errors.ts", import.meta.url), "utf8"),
+    readFile(new URL("../lib/nearby-stores.ts", import.meta.url), "utf8"),
   ]);
 
   assert.match(html, /우리 가게 주변 경쟁업체 조회/);
@@ -92,6 +93,8 @@ test("exports the nearby competitor lookup page", async () => {
   assert.match(checker, /위치는 조회할 때만 사용하며 저장하지 않습니다/);
   assert.match(errors, /조회 요청이 많습니다/);
   assert.doesNotMatch(errors, /message: "APPLICATION_ERROR"/);
+  assert.match(nearbyApi, /response\?\.body \?\? payload\.body/);
+  assert.match(nearbyApi, /Math\.min\(10/);
 });
 
 test("includes all nine official card-company links", async () => {

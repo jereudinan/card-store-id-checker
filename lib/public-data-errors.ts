@@ -33,7 +33,7 @@ export function publicDataError(code?: string) {
 
 export function extractPublicDataError(payload: ErrorPayload, rawText = "") {
   const response = payload.response as ErrorPayload | undefined;
-  const header = response?.header as ErrorPayload | undefined;
+  const header = (response?.header ?? payload.header) as ErrorPayload | undefined;
   const code = String(header?.resultCode ?? payload.resultCode ?? payload.status_code ?? payload.code ?? rawText.match(/<resultCode>([^<]+)<\/resultCode>/)?.[1] ?? "");
   const detail = String(header?.resultMsg ?? payload.resultMsg ?? payload.message ?? rawText.match(/<resultMsg>([^<]+)<\/resultMsg>/)?.[1] ?? "");
   return { code, detail, ...publicDataError(code) };
