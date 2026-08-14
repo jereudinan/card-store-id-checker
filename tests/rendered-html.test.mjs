@@ -62,6 +62,20 @@ test("exports the business registration status checker", async () => {
   assert.match(html, /조회되지 않는 정보/);
 });
 
+test("translates business status API codes into friendly labels", async () => {
+  const source = await readFile(
+    new URL("../app/business-status/business-status-checker.tsx", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(source, /"01": "계속사업자 \(현재 정상적으로 영업 중입니다\)"/);
+  assert.match(source, /"02": "휴업자 \(현재 휴업 상태입니다\)"/);
+  assert.match(source, /"03": "폐업자 \(폐업 신고된 사업자입니다\)"/);
+  assert.match(source, /"07": "부가가치세 간이과세자 \(세금계산서 발급사업자\)"/);
+  assert.match(source, /해당 없음 \(단위과세 미적용 사업자입니다\)/);
+  assert.doesNotMatch(source, /<dt>사업자 상태 코드<\/dt>|<dt>과세유형 코드<\/dt>|<dt>직전 과세유형 코드<\/dt>/);
+});
+
 test("includes all nine official card-company links", async () => {
   const html = await readFile(new URL("index.html", outputRoot), "utf8");
   const expectedLinks = [

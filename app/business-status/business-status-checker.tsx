@@ -18,6 +18,41 @@ type BusinessStatus = {
 
 const NOT_FOUND_MESSAGE = "조회되지 않는 사업자 번호입니다. 정확한 사업자 번호를 입력해 주세요.";
 
+const BUSINESS_STATUS_LABELS: Record<string, string> = {
+  "01": "계속사업자 (현재 정상적으로 영업 중입니다)",
+  "02": "휴업자 (현재 휴업 상태입니다)",
+  "03": "폐업자 (폐업 신고된 사업자입니다)",
+};
+
+const TAX_TYPE_LABELS: Record<string, string> = {
+  "01": "부가가치세 일반과세자",
+  "02": "부가가치세 간이과세자",
+  "03": "부가가치세 과세특례자",
+  "04": "부가가치세 면세사업자",
+  "05": "수익사업을 하지 않는 비영리법인·국가기관 등",
+  "06": "고유번호가 부여된 단체",
+  "07": "부가가치세 간이과세자 (세금계산서 발급사업자)",
+};
+
+function getBusinessStatusLabel(code: string) {
+  return BUSINESS_STATUS_LABELS[code] ?? "국세청에서 사업자 상태를 확인할 수 없습니다";
+}
+
+function getTaxTypeLabel(code: string) {
+  return TAX_TYPE_LABELS[code] ?? "국세청에서 과세유형을 확인할 수 없습니다";
+}
+
+function getPreviousTaxTypeLabel(code: string) {
+  if (!code) return "직전 과세유형 이력이 없습니다";
+  return TAX_TYPE_LABELS[code] ?? "국세청에서 직전 과세유형을 확인할 수 없습니다";
+}
+
+function formatYesNo(value?: string) {
+  if (value === "Y") return "해당 (단위과세 적용 사업자입니다)";
+  if (value === "N") return "해당 없음 (단위과세 미적용 사업자입니다)";
+  return "국세청에서 적용 여부를 확인할 수 없습니다";
+}
+
 function formatBusinessNumber(value: string) {
   const digits = value.replace(/\D/g, "").slice(0, 10);
   if (digits.length <= 3) return digits;
@@ -25,8 +60,8 @@ function formatBusinessNumber(value: string) {
   return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
 }
 
-function formatDate(value?: string) {
-  if (!value || value.length !== 8) return "해당 없음";
+function formatDate(value: string | undefined, emptyLabel: string) {
+  if (!value || value.length !== 8) return emptyLabel;
   return `${value.slice(0, 4)}.${value.slice(4, 6)}.${value.slice(6, 8)}`;
 }
 
@@ -95,19 +130,16 @@ export default function BusinessStatusChecker() {
           <>
             <div className="business-result-head">
               <div><span>조회 사업자번호</span><strong>{formatBusinessNumber(result.b_no)}</strong></div>
-              <span className={`status-badge status-${result.b_stt_cd}`}>{result.b_stt || "등록되지 않은 사업자"}</span>
+              <span className={`status-badge status-${result.b_stt_cd}`}>{getBusinessStatusLabel(result.b_stt_cd)}</span>
             </div>
             <dl className="business-result-list">
-              <div><dt>사업자 상태</dt><dd>{result.b_stt || "국세청 등록정보 없음"}</dd></div>
-              <div><dt>사업자 상태 코드</dt><dd>{result.b_stt_cd || "—"}</dd></div>
-              <div><dt>과세유형</dt><dd>{result.tax_type || "확인되지 않음"}</dd></div>
-              <div><dt>과세유형 코드</dt><dd>{result.tax_type_cd || "—"}</dd></div>
-              <div><dt>폐업일</dt><dd>{formatDate(result.end_dt)}</dd></div>
-              <div><dt>단위과세 적용 여부</dt><dd>{result.utcc_yn || "해당 없음"}</dd></div>
-              <div><dt>과세유형 전환일</dt><dd>{formatDate(result.tax_type_change_dt)}</dd></div>
-              <div><dt>세금계산서 적용일</dt><dd>{formatDate(result.invoice_apply_dt)}</dd></div>
-              <div><dt>직전 과세유형</dt><dd>{result.rbf_tax_type || "해당 없음"}</dd></div>
-              <div><dt>직전 과세유형 코드</dt><dd>{result.rbf_tax_type_cd || "—"}</dd></div>
+              <div><dt>사업자 상태</dt><dd>{getBusinessStatusLabel(result.b_stt_cd)}</dd></div>
+              <div><dt>과세유형</dt><dd>{getTaxTypeLabel(result.tax_type_cd)}</dd></div>
+              <div><dt>폐업일</dt><dd>{formatDate(result.end_dt, "폐업 이력이 없습니다")}</dd></div>
+              <div><dt>단위과세 적용 여부</dt><dd>{formatYesNo(result.utcc_yn)}</dd></div>
+              <div><dt>과세유형 전환일</dt><dd>{formatDate(result.tax_type_change_dt, "과세유형 변경 이력이 없습니다")}</dd></div>
+              <div><dt>세금계산서 적용일</dt><dd>{formatDate(result.invoice_apply_dt, "세금계산서 적용일 정보가 없습니다")}</dd></div>
+              <div><dt>직전 과세유형</dt><dd>{getPreviousTaxTypeLabel(result.rbf_tax_type_cd)}</dd></div>
             </dl>
           </>
         )}
