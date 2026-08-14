@@ -53,6 +53,22 @@ function formatYesNo(value?: string) {
   return "국세청에서 적용 여부를 확인할 수 없습니다";
 }
 
+function FriendlyValue({ value }: { value: string }) {
+  const match = value.match(/^(.+?)\s*\((.+)\)$/);
+  if (!match) return <span className="result-value-main">{value}</span>;
+
+  return (
+    <span className="result-value-group">
+      <span className="result-value-main">{match[1]}</span>
+      <span className="result-value-description">{match[2]}</span>
+    </span>
+  );
+}
+
+function getPrimaryText(value: string) {
+  return value.replace(/\s*\(.+\)$/, "");
+}
+
 function formatBusinessNumber(value: string) {
   const digits = value.replace(/\D/g, "").slice(0, 10);
   if (digits.length <= 3) return digits;
@@ -130,16 +146,16 @@ export default function BusinessStatusChecker() {
           <>
             <div className="business-result-head">
               <div><span>조회 사업자번호</span><strong>{formatBusinessNumber(result.b_no)}</strong></div>
-              <span className={`status-badge status-${result.b_stt_cd}`}>{getBusinessStatusLabel(result.b_stt_cd)}</span>
+              <span className={`status-badge status-${result.b_stt_cd}`}>{getPrimaryText(getBusinessStatusLabel(result.b_stt_cd))}</span>
             </div>
             <dl className="business-result-list">
-              <div><dt>사업자 상태</dt><dd>{getBusinessStatusLabel(result.b_stt_cd)}</dd></div>
-              <div><dt>과세유형</dt><dd>{getTaxTypeLabel(result.tax_type_cd)}</dd></div>
-              <div><dt>폐업일</dt><dd>{formatDate(result.end_dt, "폐업 이력이 없습니다")}</dd></div>
-              <div><dt>단위과세 적용 여부</dt><dd>{formatYesNo(result.utcc_yn)}</dd></div>
-              <div><dt>과세유형 전환일</dt><dd>{formatDate(result.tax_type_change_dt, "과세유형 변경 이력이 없습니다")}</dd></div>
-              <div><dt>세금계산서 적용일</dt><dd>{formatDate(result.invoice_apply_dt, "세금계산서 적용일 정보가 없습니다")}</dd></div>
-              <div><dt>직전 과세유형</dt><dd>{getPreviousTaxTypeLabel(result.rbf_tax_type_cd)}</dd></div>
+              <div><dt>사업자 상태</dt><dd><FriendlyValue value={getBusinessStatusLabel(result.b_stt_cd)} /></dd></div>
+              <div><dt>과세유형</dt><dd><FriendlyValue value={getTaxTypeLabel(result.tax_type_cd)} /></dd></div>
+              <div><dt>폐업일</dt><dd><FriendlyValue value={formatDate(result.end_dt, "폐업 이력이 없습니다")} /></dd></div>
+              <div><dt>단위과세 적용 여부</dt><dd><FriendlyValue value={formatYesNo(result.utcc_yn)} /></dd></div>
+              <div><dt>과세유형 전환일</dt><dd><FriendlyValue value={formatDate(result.tax_type_change_dt, "과세유형 변경 이력이 없습니다")} /></dd></div>
+              <div><dt>세금계산서 적용일</dt><dd><FriendlyValue value={formatDate(result.invoice_apply_dt, "세금계산서 적용일 정보가 없습니다")} /></dd></div>
+              <div><dt>직전 과세유형</dt><dd><FriendlyValue value={getPreviousTaxTypeLabel(result.rbf_tax_type_cd)} /></dd></div>
             </dl>
           </>
         )}
