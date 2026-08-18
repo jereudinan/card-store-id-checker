@@ -1,19 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { createBreadcrumbs, createPageMetadata, SITE_URL } from "../../lib/seo";
 
-export const metadata: Metadata = {
-  title: "서비스 소개",
-  description:
-    "카드 가맹점 조회 바로가기 서비스의 제공 기능, 이용 방법, 지원 카드사와 운영 원칙을 안내합니다.",
-  alternates: {
-    canonical: "/about/",
-  },
-  openGraph: {
-    title: "서비스 소개 | 카드 가맹점 조회",
-    description: "9개 카드사의 공식 가맹점 조회 페이지를 편리하게 찾는 방법",
-    url: "/about/",
-  },
-};
+export const metadata: Metadata = createPageMetadata({ title: "서비스 소개", description: "카드 가맹점 조회와 수수료 계산, 사업자 상태 및 주변 경쟁업체 조회 기능의 이용 방법과 운영 원칙을 안내합니다.", path: "/about/" });
 
 const supportedCompanies = [
   "비씨카드",
@@ -28,15 +17,15 @@ const supportedCompanies = [
 ];
 
 export default function AboutPage() {
-  const structuredData = {
+  const structuredData = [{
     "@context": "https://schema.org",
     "@type": "WebPage",
     name: "카드 가맹점 조회 서비스 소개",
-    url: "https://card-store-id-checker.pages.dev/about/",
+    url: `${SITE_URL}/about/`,
     description:
       "국내 주요 카드사의 공식 가맹점 번호 조회 페이지를 한곳에서 연결하는 서비스 안내",
     inLanguage: "ko-KR",
-  };
+  }, createBreadcrumbs([{ name: "홈", path: "/" }, { name: "서비스 소개", path: "/about/" }])];
 
   return (
     <main className="about-shell">
@@ -47,6 +36,7 @@ export default function AboutPage() {
           <Link href="/calculator/">수수료 계산기</Link>
           <span aria-hidden="true">/</span>
           <Link href="/business-status/">사업자 상태 조회</Link>
+          <span aria-hidden="true">/</span>
           <Link href="/competitors/">주변 경쟁업체</Link>
           <span aria-hidden="true">/</span>
           <strong>사이트 소개</strong>

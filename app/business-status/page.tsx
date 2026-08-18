@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import BusinessStatusChecker from "./business-status-checker";
+import { createBreadcrumbs, createPageMetadata, SITE_URL } from "../../lib/seo";
 
-export const metadata: Metadata = {
-  title: "사업자등록 상태 조회",
-  description: "사업자등록번호 한 번 입력으로 계속사업자·휴업·폐업 여부와 과세유형을 국세청 공공데이터에서 확인하세요.",
-  alternates: { canonical: "/business-status/" },
-  openGraph: { title: "사업자등록 상태 조회", description: "국세청 사업자등록 상태와 과세유형 간편 조회", url: "/business-status/" },
-};
+export const metadata: Metadata = createPageMetadata({ title: "사업자등록 상태 조회", description: "사업자등록번호 한 번 입력으로 계속사업자·휴업자·폐업자 여부와 과세유형을 국세청 공공데이터에서 확인하세요.", path: "/business-status/" });
 
 export default function BusinessStatusPage() {
+  const structuredData = [{ "@context": "https://schema.org", "@type": "WebApplication", name: "사업자등록 상태 조회", url: `${SITE_URL}/business-status/`, applicationCategory: "BusinessApplication", operatingSystem: "All", description: "사업자등록번호로 사업자 상태와 과세유형을 확인하는 무료 조회 서비스", offers: { "@type": "Offer", price: "0", priceCurrency: "KRW" }, inLanguage: "ko-KR" }, createBreadcrumbs([{ name: "홈", path: "/" }, { name: "사업자등록 상태 조회", path: "/business-status/" }])];
   return (
     <main className="business-status-shell">
       <div className="business-status-container">
@@ -31,6 +28,7 @@ export default function BusinessStatusPage() {
           <article><h2>정보 반영 시점</h2><p>국세청 등록정보는 약 30분 주기로 갱신되며, 신규 개업자는 조회까지 1~2일이 걸릴 수 있습니다.</p></article>
         </section>
         <section className="business-source-note"><strong>안내</strong><p>이 조회 결과는 국세청 사업자등록정보 상태조회 API를 기반으로 하며 참고용입니다. 계약이나 거래 전에는 사업자등록증 등 공식 서류도 함께 확인하세요.</p><a href="https://www.data.go.kr/data/15081808/openapi.do" target="_blank" rel="noopener noreferrer">공공데이터포털 공식 안내 ↗</a></section>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       </div>
     </main>
   );

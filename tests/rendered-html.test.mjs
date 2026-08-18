@@ -32,9 +32,35 @@ test("exports the introduction page and SEO discovery files", async () => {
   assert.match(aboutHtml, /mailto:rodiscarry@gmail\.com/);
   assert.match(aboutHtml, /사이트 이용 중 궁금한 점이나 수정이 필요한 정보/);
   assert.match(robots, /Allow: \//);
+  assert.match(robots, /User-agent: Yeti/);
   assert.match(sitemap, /card-store-id-checker\.pages\.dev\/about\//);
   assert.match(sitemap, /card-store-id-checker\.pages\.dev\/calculator\//);
   assert.match(sitemap, /card-store-id-checker\.pages\.dev\/competitors\//);
+  assert.equal((sitemap.match(/<lastmod>2026-08-18<\/lastmod>/g) ?? []).length, 5);
+});
+
+test("gives every indexable page unique Naver-friendly metadata", async () => {
+  const routes = ["index.html", "calculator/index.html", "business-status/index.html", "competitors/index.html", "about/index.html"];
+  const titles = new Set();
+  const descriptions = new Set();
+
+  for (const route of routes) {
+    const html = await readFile(new URL(route, outputRoot), "utf8");
+    const title = html.match(/<title>(.*?)<\/title>/)?.[1];
+    const description = html.match(/<meta name="description" content="(.*?)"/)?.[1];
+    assert.ok(title);
+    assert.ok(description);
+    assert.match(html, /<link rel="canonical" href="https:\/\/card-store-id-checker\.pages\.dev\//);
+    assert.match(html, /<meta property="og:title"/);
+    assert.match(html, /<meta property="og:description"/);
+    assert.match(html, /<meta property="og:image" content="https:\/\/card-store-id-checker\.pages\.dev\/og\.png"/);
+    assert.match(html, /application\/ld\+json/);
+    titles.add(title);
+    descriptions.add(description);
+  }
+
+  assert.equal(titles.size, routes.length);
+  assert.equal(descriptions.size, routes.length);
 });
 
 test("exports the card fee calculator with current preferred rates", async () => {

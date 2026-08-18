@@ -1,31 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import CardFeeCalculator from "./card-fee-calculator";
+import { createBreadcrumbs, createPageMetadata, SITE_URL } from "../../lib/seo";
 
-export const metadata: Metadata = {
-  title: "카드 수수료 계산기",
-  description: "신용카드와 체크카드 매출액을 입력해 예상 가맹점 수수료와 입금액을 간편하게 계산하세요.",
-  alternates: { canonical: "/calculator/" },
-  openGraph: {
-    title: "카드 수수료 계산기 | 가맹점 예상 수수료 계산",
-    description: "2026년 영세·중소가맹점 우대수수료율 기준 예상 카드 수수료 계산기",
-    url: "/calculator/",
-  },
-};
+export const metadata: Metadata = createPageMetadata({ title: "카드 수수료 계산기", description: "신용카드와 체크카드 매출액을 입력해 영세·중소가맹점의 예상 카드 수수료와 실제 입금액을 간편하게 계산하세요.", path: "/calculator/" });
 
 const officialSource = "https://www.fsc.go.kr/po010104/86274";
 
 export default function CalculatorPage() {
-  const structuredData = {
+  const structuredData = [{
     "@context": "https://schema.org",
     "@type": "WebApplication",
     name: "카드 수수료 계산기",
-    url: "https://card-store-id-checker.pages.dev/calculator/",
+    url: `${SITE_URL}/calculator/`,
     applicationCategory: "FinanceApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "KRW" },
     inLanguage: "ko-KR",
-  };
+  }, createBreadcrumbs([{ name: "홈", path: "/" }, { name: "카드 수수료 계산기", path: "/calculator/" }])];
 
   return (
     <main className="calculator-shell">

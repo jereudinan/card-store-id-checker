@@ -11,16 +11,6 @@ export const metadata: Metadata = {
   },
   description:
     "비씨·하나·신한·국민·삼성·현대·롯데·우리·농협카드의 공식 가맹점 번호 조회 페이지를 한곳에서 빠르게 찾아보세요.",
-  keywords: [
-    "카드사 가맹점 조회",
-    "카드 가맹점 번호 조회",
-    "가맹점 번호 확인",
-    "카드사 가맹점번호",
-    "신용카드 가맹점 조회",
-    "BC카드 가맹점 조회",
-    "국민카드 가맹점 조회",
-    "신한카드 가맹점 조회",
-  ],
   alternates: {
     canonical: "/",
   },
@@ -42,6 +32,7 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,
