@@ -8,6 +8,19 @@
   --card: #ffffff;
 }
 
+.forum-search button { flex: 0 0 auto; padding: 9px 14px; border: 0; border-radius: 9px; color: white; background: #555aa9; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; }
+.editor-deck-input, .editor-document section textarea { width: 100%; padding: 10px 12px; border: 1px solid transparent; border-radius: 7px; outline: 0; color: #66636c; background: transparent; font: inherit; font-size: 11px; line-height: 1.7; resize: vertical; }
+.editor-deck-input { min-height: 72px; margin-top: 12px; color: #77747e; }
+.editor-document section textarea { min-height: 62px; }.editor-document section li textarea { min-height: 48px; }
+.editor-deck-input:focus, .editor-document section textarea:focus { border-color: rgba(109,114,195,.35); background: #fafafe; }
+.article-data-table { margin-top: 20px; overflow-x: auto; }.article-data-table table { width: 100%; border-collapse: collapse; background: white; }.article-data-table th, .article-data-table td { padding: 12px; border: 1px solid #e8e7ea; font-size: 12px; text-align: left; }
+
+@media (max-width: 720px) {
+  .forum-search button { min-height: 42px; font-size: 14px; }
+  .editor-deck-input, .editor-document section textarea { font-size: 15px; }
+  .article-data-table th, .article-data-table td { font-size: 14px; }
+}
+
 * {
   box-sizing: border-box;
 }

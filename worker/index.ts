@@ -3,6 +3,7 @@ import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } fr
 import handler from "vinext/server/app-router-entry";
 import { extractPublicDataError } from "../lib/public-data-errors";
 import { NearbyStoresApiError, queryNearbyStores } from "../lib/nearby-stores";
+import { publishArticle, readAdminArticle, readAdminDashboard, readPublishedArticle, readPublishedArticles, recordForumSearch, selectTopic, updateArticle } from "../db/forum-runtime";
 
 interface Env {
   ASSETS: Fetcher;
@@ -31,6 +32,54 @@ interface ExecutionContext {
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+
+    if (url.pathname === "/api/forum/articles" && request.method === "GET") {
+      if (!env.DB) return Response.json({ error: "콘텐츠 데이터베이스를 준비하고 있습니다." }, { status: 503 });
+      try {
+        const query = url.searchParams.get("q") ?? "", category = url.searchParams.get("category") ?? "";
+        const articles = await readPublishedArticles(env.DB, query, category);
+        ctx.waitUntil(recordForumSearch(env.DB, query, articles.length));
+        return Response.json({ articles }, { headers: { "Cache-Control": query ? "no-store" : "public, max-age=60" } });
+      } catch (error) { console.error("Forum list failed", error); return Response.json({ error: "콘텐츠를 불러오지 못했습니다." }, { status: 500 }); }
+    }
+
+    const publicArticleMatch = url.pathname.match(/^\/api\/forum\/articles\/([^/]+)$/);
+    if (publicArticleMatch && request.method === "GET") {
+      if (!env.DB) return Response.json({ error: "콘텐츠 데이터베이스를 준비하고 있습니다." }, { status: 503 });
+      try {
+        const article = await readPublishedArticle(env.DB, decodeURIComponent(publicArticleMatch[1]));
+        return article ? Response.json({ article }, { headers: { "Cache-Control": "public, max-age=60" } }) : Response.json({ error: "게시물을 찾을 수 없습니다." }, { status: 404 });
+      } catch (error) { console.error("Forum article failed", error); return Response.json({ error: "콘텐츠를 불러오지 못했습니다." }, { status: 500 }); }
+    }
+
+    if (url.pathname.startsWith("/api/admin/forum/")) {
+      if (!request.headers.get("oai-authenticated-user-email")) return Response.json({ error: "로그인이 필요합니다." }, { status: 401 });
+      if (!env.DB) return Response.json({ error: "콘텐츠 데이터베이스를 준비하고 있습니다." }, { status: 503 });
+      try {
+        if (url.pathname === "/api/admin/forum/dashboard" && request.method === "GET") {
+          const date = url.searchParams.get("date") ?? new Date().toISOString().slice(0, 10);
+          return Response.json(await readAdminDashboard(env.DB, date), { headers: { "Cache-Control": "no-store" } });
+        }
+        const topicMatch = url.pathname.match(/^\/api\/admin\/forum\/topics\/(\d+)\/select$/);
+        if (topicMatch && request.method === "POST") return Response.json({ topic: await selectTopic(env.DB, Number(topicMatch[1])) });
+        const publishMatch = url.pathname.match(/^\/api\/admin\/forum\/articles\/(\d+)\/publish$/);
+        if (publishMatch && request.method === "POST") {
+          const body = await request.json().catch(() => ({})) as { scheduledAt?: string | null };
+          return Response.json({ article: await publishArticle(env.DB, Number(publishMatch[1]), body.scheduledAt) });
+        }
+        const articleMatch = url.pathname.match(/^\/api\/admin\/forum\/articles\/(\d+)$/);
+        if (articleMatch && request.method === "GET") {
+          const article = await readAdminArticle(env.DB, Number(articleMatch[1]));
+          return article ? Response.json({ article }) : Response.json({ error: "게시물을 찾을 수 없습니다." }, { status: 404 });
+        }
+        if (articleMatch && request.method === "PATCH") {
+          const body = await request.json() as { title?: string; deck?: string; summary?: string[]; body?: Record<string, unknown>[]; reviewAt?: string | null };
+          const article = await updateArticle(env.DB, Number(articleMatch[1]), body);
+          return article ? Response.json({ article }) : Response.json({ error: "게시물을 찾을 수 없습니다." }, { status: 404 });
+        }
+      } catch (error) { console.error("Admin forum API failed", error); return Response.json({ error: "관리자 작업을 처리하지 못했습니다." }, { status: 500 }); }
+      return Response.json({ error: "요청한 기능을 찾을 수 없습니다." }, { status: 404 });
+    }
 
     if (url.pathname === "/api/business-status" && request.method === "POST") {
       if (!env.DATA_GO_KR_SERVICE_KEY) {
