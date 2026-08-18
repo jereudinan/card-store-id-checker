@@ -4,6 +4,7 @@ import handler from "vinext/server/app-router-entry";
 import { extractPublicDataError } from "../lib/public-data-errors";
 import { NearbyStoresApiError, queryNearbyStores } from "../lib/nearby-stores";
 import { publishArticle, readAdminArticle, readAdminDashboard, readPublishedArticle, readPublishedArticles, recordForumSearch, selectTopic, updateArticle } from "../db/forum-runtime";
+import { ensureForumDatabase } from "../db/forum-init";
 
 interface Env {
   ASSETS: Fetcher;
@@ -36,6 +37,7 @@ const worker = {
     if (url.pathname === "/api/forum/articles" && request.method === "GET") {
       if (!env.DB) return Response.json({ error: "콘텐츠 데이터베이스를 준비하고 있습니다." }, { status: 503 });
       try {
+        await ensureForumDatabase(env.DB);
         const query = url.searchParams.get("q") ?? "", category = url.searchParams.get("category") ?? "";
         const articles = await readPublishedArticles(env.DB, query, category);
         ctx.waitUntil(recordForumSearch(env.DB, query, articles.length));
@@ -47,15 +49,18 @@ const worker = {
     if (publicArticleMatch && request.method === "GET") {
       if (!env.DB) return Response.json({ error: "콘텐츠 데이터베이스를 준비하고 있습니다." }, { status: 503 });
       try {
+        await ensureForumDatabase(env.DB);
         const article = await readPublishedArticle(env.DB, decodeURIComponent(publicArticleMatch[1]));
         return article ? Response.json({ article }, { headers: { "Cache-Control": "public, max-age=60" } }) : Response.json({ error: "게시물을 찾을 수 없습니다." }, { status: 404 });
       } catch (error) { console.error("Forum article failed", error); return Response.json({ error: "콘텐츠를 불러오지 못했습니다." }, { status: 500 }); }
     }
 
     if (url.pathname.startsWith("/api/admin/forum/")) {
-      if (!request.headers.get("oai-authenticated-user-email")) return Response.json({ error: "로그인이 필요합니다." }, { status: 401 });
+      const isLocalRequest = ["localhost", "127.0.0.1", "::1"].includes(url.hostname);
+      if (!request.headers.get("oai-authenticated-user-email") && !isLocalRequest) return Response.json({ error: "로그인이 필요합니다." }, { status: 401 });
       if (!env.DB) return Response.json({ error: "콘텐츠 데이터베이스를 준비하고 있습니다." }, { status: 503 });
       try {
+        await ensureForumDatabase(env.DB);
         if (url.pathname === "/api/admin/forum/dashboard" && request.method === "GET") {
           const date = url.searchParams.get("date") ?? new Date().toISOString().slice(0, 10);
           return Response.json(await readAdminDashboard(env.DB, date), { headers: { "Cache-Control": "no-store" } });

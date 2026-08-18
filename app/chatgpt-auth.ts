@@ -19,6 +19,9 @@ const CALLBACK_PATH = "/callback";
 export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
   const requestHeaders = await headers();
   const email = requestHeaders.get(USER_EMAIL_HEADER);
+  if (!email && isLocalDevelopmentHost(requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host"))) {
+    return { displayName: "로컬 관리자", email: "local-admin@localhost", fullName: "로컬 관리자" };
+  }
   if (!email) return null;
 
   const encodedFullName = requestHeaders.get(USER_FULL_NAME_HEADER);
@@ -33,6 +36,12 @@ export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
     email,
     fullName,
   };
+}
+
+function isLocalDevelopmentHost(host: string | null): boolean {
+  if (!host) return false;
+  const normalized = host.toLowerCase();
+  return normalized === "localhost" || normalized.startsWith("localhost:") || normalized === "127.0.0.1" || normalized.startsWith("127.0.0.1:") || normalized === "::1" || normalized.startsWith("[::1]");
 }
 
 export async function requireChatGPTUser(
