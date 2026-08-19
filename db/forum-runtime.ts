@@ -68,7 +68,11 @@ export async function readAdminDashboard(db: D1Database, date: string) {
 export async function readAdminArticle(db: D1Database, id: number) {
   const article = await db.prepare(`SELECT a.*, c.name AS category FROM forum_articles a JOIN forum_categories c ON c.id=a.category_id WHERE a.id=?1`).bind(id).first<Record<string, unknown>>();
   if (!article) return null;
-  return { ...article, summary_json: JSON.parse(String(article.summary_json || "[]")), body_json: JSON.parse(String(article.body_json || "[]")) };
+  const [sources, jobs] = await db.batch([
+    db.prepare(`SELECT id, url, title, publisher, kind, accessed_at, last_checked_at, changed_at FROM forum_article_sources WHERE article_id=?1 ORDER BY sort_order, id`).bind(id),
+    db.prepare(`SELECT id, job_type, status, error_message, completed_at, created_at FROM forum_content_jobs WHERE article_id=?1 ORDER BY id DESC LIMIT 8`).bind(id),
+  ]);
+  return { ...article, summary_json: JSON.parse(String(article.summary_json || "[]")), body_json: JSON.parse(String(article.body_json || "[]")), sources: sources.results ?? [], jobs: jobs.results ?? [] };
 }
 
 export async function selectTopic(db: D1Database, id: number) {

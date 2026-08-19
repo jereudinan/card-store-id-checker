@@ -5,11 +5,13 @@ import { extractPublicDataError } from "../lib/public-data-errors";
 import { NearbyStoresApiError, queryNearbyStores } from "../lib/nearby-stores";
 import { createDirectTopic, publishArticle, readAdminArticle, readAdminDashboard, readPublishedArticle, readPublishedArticles, recordForumSearch, selectTopic, updateArticle } from "../db/forum-runtime";
 import { ensureForumDatabase } from "../db/forum-init";
+import { runForumAutomation } from "../lib/forum-automation";
 
 interface Env {
   ASSETS: Fetcher;
   DB?: D1Database;
   DATA_GO_KR_SERVICE_KEY?: string;
+  OPENAI_API_KEY?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -77,6 +79,13 @@ const worker = {
         if (publishMatch && request.method === "POST") {
           const body = await request.json().catch(() => ({})) as { scheduledAt?: string | null };
           return Response.json({ article: await publishArticle(env.DB, Number(publishMatch[1]), body.scheduledAt) });
+        }
+        const automationMatch = url.pathname.match(/^\/api\/admin\/forum\/articles\/(\d+)\/automation$/);
+        if (automationMatch && request.method === "POST") {
+          const body = await request.json() as { action?: "rewrite" | "research" | "verify" | "import_sources"; sources?: { url: string; title: string; publisher: string; kind: "government" | "professional"; note?: string }[] };
+          if (!body.action || !["rewrite", "research", "verify", "import_sources"].includes(body.action)) return Response.json({ error: "자동화 작업 종류를 확인해주세요." }, { status: 400 });
+          try { return Response.json(await runForumAutomation(env.DB, Number(automationMatch[1]), body.action, env.OPENAI_API_KEY, { sources: body.sources })); }
+          catch (error) { return Response.json({ error: error instanceof Error ? error.message : "자동화 작업을 처리하지 못했습니다." }, { status: 502 }); }
         }
         const articleMatch = url.pathname.match(/^\/api\/admin\/forum\/articles\/(\d+)$/);
         if (articleMatch && request.method === "GET") {

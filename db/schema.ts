@@ -142,7 +142,7 @@ export const contentJobs = sqliteTable("forum_content_jobs", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   articleId: integer("article_id").references(() => articles.id, { onDelete: "cascade" }),
   topicSuggestionId: integer("topic_suggestion_id").references(() => topicSuggestions.id, { onDelete: "set null" }),
-  jobType: text("job_type").$type<"research" | "draft" | "verify" | "rewrite" | "diagram" | "source_check">().notNull(),
+  jobType: text("job_type").$type<"research" | "draft" | "verify" | "rewrite" | "diagram" | "source_check" | "source_import">().notNull(),
   status: text("status").$type<"queued" | "running" | "completed" | "failed">().notNull().default("queued"),
   inputJson: text("input_json", { mode: "json" }).$type<Record<string, unknown>>().notNull().default(sql`'{}'`),
   outputJson: text("output_json", { mode: "json" }).$type<Record<string, unknown> | null>(),

@@ -1,12 +1,36 @@
 import assert from "node:assert/strict";
-import { access, readFile } from "node:fs/promises";
-import test from "node:test";
+import { spawn } from "node:child_process";
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import test, { after, before } from "node:test";
 
-const outputRoot = new URL("../dist/client/", import.meta.url);
+const port = 43179;
+const baseUrl = `http://127.0.0.1:${port}`;
+let server;
 
-test("creates a Cloudflare Pages static entry point", async () => {
-  await access(new URL("index.html", outputRoot));
-  const html = await readFile(new URL("index.html", outputRoot), "utf8");
+before(async () => {
+  const cli = fileURLToPath(new URL("../node_modules/vinext/dist/cli.js", import.meta.url));
+  server = spawn(process.execPath, [cli, "start", "--hostname", "127.0.0.1", "--port", String(port)], { stdio: "ignore" });
+  for (let attempt = 0; attempt < 40; attempt += 1) {
+    try {
+      const response = await fetch(baseUrl);
+      if (response.ok) return;
+    } catch { /* server is still starting */ }
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+  throw new Error("Vinext production server did not start in time.");
+}, { timeout: 15_000 });
+
+after(() => server?.kill());
+
+async function getText(path) {
+  const response = await fetch(`${baseUrl}${path}`);
+  assert.equal(response.status, 200, `${path} returned ${response.status}`);
+  return response.text();
+}
+
+test("serves the production home page", async () => {
+  const html = await getText("/");
 
   assert.match(html, /<html lang="ko">/i);
   assert.match(
@@ -22,9 +46,9 @@ test("creates a Cloudflare Pages static entry point", async () => {
 
 test("exports the introduction page and SEO discovery files", async () => {
   const [aboutHtml, robots, sitemap] = await Promise.all([
-    readFile(new URL("about/index.html", outputRoot), "utf8"),
-    readFile(new URL("robots.txt", outputRoot), "utf8"),
-    readFile(new URL("sitemap.xml", outputRoot), "utf8"),
+    getText("/about/"),
+    readFile(new URL("../dist/client/robots.txt", import.meta.url), "utf8"),
+    readFile(new URL("../dist/client/sitemap.xml", import.meta.url), "utf8"),
   ]);
 
   assert.match(aboutHtml, /카드 가맹점 조회를 더 간편하게/);
@@ -40,12 +64,12 @@ test("exports the introduction page and SEO discovery files", async () => {
 });
 
 test("gives every indexable page unique Naver-friendly metadata", async () => {
-  const routes = ["index.html", "calculator/index.html", "business-status/index.html", "competitors/index.html", "about/index.html"];
+  const routes = ["/", "/calculator/", "/business-status/", "/competitors/", "/about/"];
   const titles = new Set();
   const descriptions = new Set();
 
   for (const route of routes) {
-    const html = await readFile(new URL(route, outputRoot), "utf8");
+    const html = await getText(route);
     const title = html.match(/<title>(.*?)<\/title>/)?.[1];
     const description = html.match(/<meta name="description" content="(.*?)"/)?.[1];
     assert.ok(title);
@@ -64,7 +88,7 @@ test("gives every indexable page unique Naver-friendly metadata", async () => {
 });
 
 test("exports the card fee calculator with current preferred rates", async () => {
-  const html = await readFile(new URL("calculator/index.html", outputRoot), "utf8");
+  const html = await getText("/calculator/");
 
   assert.match(html, /카드 수수료 계산기/);
   assert.match(html, /3억원 이하/);
@@ -82,7 +106,7 @@ test("exports the card fee calculator with current preferred rates", async () =>
 });
 
 test("exports the business registration status checker", async () => {
-  const html = await readFile(new URL("business-status/index.html", outputRoot), "utf8");
+  const html = await getText("/business-status/");
   assert.match(html, /사업자등록 상태 조회/);
   assert.match(html, /계속사업자·휴업자·폐업자/);
   assert.match(html, /공공데이터포털/);
@@ -105,7 +129,7 @@ test("translates business status API codes into friendly labels", async () => {
 
 test("exports the nearby competitor lookup page", async () => {
   const [html, checker, errors, nearbyApi] = await Promise.all([
-    readFile(new URL("competitors/index.html", outputRoot), "utf8"),
+    getText("/competitors/"),
     readFile(new URL("../app/competitors/competitor-checker.tsx", import.meta.url), "utf8"),
     readFile(new URL("../lib/public-data-errors.ts", import.meta.url), "utf8"),
     readFile(new URL("../lib/nearby-stores.ts", import.meta.url), "utf8"),
@@ -124,7 +148,7 @@ test("exports the nearby competitor lookup page", async () => {
 });
 
 test("includes all nine official card-company links", async () => {
-  const html = await readFile(new URL("index.html", outputRoot), "utf8");
+  const html = await getText("/");
   const expectedLinks = [
     "bccard.com/app/merchant/StoreNoInqActn.do",
     "hanacard.co.kr/OMA25000000M.web",
@@ -143,7 +167,7 @@ test("includes all nine official card-company links", async () => {
 });
 
 test("includes card-company phone links and lookup buttons", async () => {
-  const html = await readFile(new URL("index.html", outputRoot), "utf8");
+  const html = await getText("/");
   const phoneNumbers = [
     "15884500",
     "18001111",
@@ -164,9 +188,23 @@ test("includes card-company phone links and lookup buttons", async () => {
 });
 
 test("includes verified mobile merchant lookup destinations", async () => {
-  const html = await readFile(new URL("index.html", outputRoot), "utf8");
+  const html = await getText("/");
 
   assert.match(html, /merchant\.bccard\.com\/app\/merchant\/StoreNoInqActn\.do/);
   assert.match(html, /hanacard\.co\.kr\/MA25000000M\.web/);
   assert.match(html, /m\.nhbizcard\.nonghyup\.com\/imcn1000m\.act/);
+});
+
+test("caps forum AI cost and blocks duplicate automation requests", async () => {
+  const [automation, editor] = await Promise.all([
+    readFile(new URL("../lib/forum-automation.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/admin/forum/editor/editor-client.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(automation, /DAILY_AI_JOB_LIMIT = 3/);
+  assert.match(automation, /MAX_AI_OUTPUT_TOKENS = 4000/);
+  assert.match(automation, /created_at >= datetime\('now', '\+9 hours', 'start of day', '-9 hours'\)/);
+  assert.match(automation, /NOT EXISTS \([\s\S]*status IN \('queued', 'running'\)/);
+  assert.match(automation, /max_output_tokens: MAX_AI_OUTPUT_TOKENS/);
+  assert.match(editor, /automationLocked\.current/);
 });

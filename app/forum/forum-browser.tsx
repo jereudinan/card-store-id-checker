@@ -16,7 +16,6 @@ export default function ForumBrowser() {
 
   useEffect(() => {
     const controller = new AbortController();
-    setLoading(true); setError("");
     const params = new URLSearchParams();
     if (submittedQuery) params.set("q", submittedQuery);
     if (category) params.set("category", category);
@@ -28,5 +27,17 @@ export default function ForumBrowser() {
     return () => controller.abort();
   }, [submittedQuery, category]);
 
-  return <><section className="forum-tools" aria-label="콘텐츠 검색과 분류"><form className="forum-search" onSubmit={(event) => { event.preventDefault(); setSubmittedQuery(query.trim()); }}><span aria-hidden="true">⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="궁금한 세금, 지원금, 업종을 검색하세요" aria-label="창업 정보 검색" /><button type="submit">검색</button></form><div className="forum-categories" role="group" aria-label="업무 분야">{categories.map((item) => <button key={item.slug} className={category === item.slug ? "is-active" : ""} onClick={() => setCategory(item.slug)}>{item.label}</button>)}</div></section><section className="forum-list-section" aria-labelledby="latest-title"><div className="forum-section-head"><div><span>DAILY GUIDE</span><h2 id="latest-title">최신 창업 정보</h2></div><p>{loading ? "불러오는 중" : `총 ${articles.length}개의 글`}</p></div>{error ? <div className="forum-empty"><strong>연결이 원활하지 않습니다</strong><p>{error}</p></div> : loading ? <div className="forum-empty"><strong>검수된 콘텐츠를 불러오고 있습니다</strong></div> : articles.length ? <div className="forum-article-grid">{articles.map((article) => <Link className={article.isFeatured ? "forum-article featured" : "forum-article"} href={`/forum/${article.slug}/`} key={article.id}><div className="article-meta"><span>{article.category}</span><time>{article.publishedAt.slice(0, 10).replaceAll("-", ".")}</time></div><h3>{article.title}</h3><p>{article.summary}</p><div className="article-footer"><div>{article.tags.map((tag) => <small key={tag}>#{tag}</small>)}</div><strong>{article.readingMinutes}분 읽기 →</strong></div></Link>)}</div> : <div className="forum-empty"><strong>검색 결과가 없습니다</strong><p>다른 검색어나 카테고리로 찾아보세요.</p></div>}</section></>;
+  function submitSearch(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const nextQuery = query.trim();
+    if (nextQuery === submittedQuery) return;
+    setLoading(true); setError(""); setSubmittedQuery(nextQuery);
+  }
+
+  function chooseCategory(slug: string) {
+    if (slug === category) return;
+    setLoading(true); setError(""); setCategory(slug);
+  }
+
+  return <><section className="forum-tools" aria-label="콘텐츠 검색과 분류"><form className="forum-search" onSubmit={submitSearch}><span aria-hidden="true">⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="궁금한 세금, 지원금, 업종을 검색하세요" aria-label="창업 정보 검색" /><button type="submit">검색</button></form><div className="forum-categories" role="group" aria-label="업무 분야">{categories.map((item) => <button key={item.slug} className={category === item.slug ? "is-active" : ""} onClick={() => chooseCategory(item.slug)}>{item.label}</button>)}</div></section><section className="forum-list-section" aria-labelledby="latest-title"><div className="forum-section-head"><div><span>DAILY GUIDE</span><h2 id="latest-title">최신 창업 정보</h2></div><p>{loading ? "불러오는 중" : `총 ${articles.length}개의 글`}</p></div>{error ? <div className="forum-empty"><strong>연결이 원활하지 않습니다</strong><p>{error}</p></div> : loading ? <div className="forum-empty"><strong>검수된 콘텐츠를 불러오고 있습니다</strong></div> : articles.length ? <div className="forum-article-grid">{articles.map((article) => <Link className={article.isFeatured ? "forum-article featured" : "forum-article"} href={`/forum/${article.slug}/`} key={article.id}><div className="article-meta"><span>{article.category}</span><time>{article.publishedAt.slice(0, 10).replaceAll("-", ".")}</time></div><h3>{article.title}</h3><p>{article.summary}</p><div className="article-footer"><div>{article.tags.map((tag) => <small key={tag}>#{tag}</small>)}</div><strong>{article.readingMinutes}분 읽기 →</strong></div></Link>)}</div> : <div className="forum-empty"><strong>검색 결과가 없습니다</strong><p>다른 검색어나 카테고리로 찾아보세요.</p></div>}</section></>;
 }

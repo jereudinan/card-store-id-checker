@@ -1,4 +1,5 @@
 import DeviceAwareLink from "./device-aware-link";
+import Image from "next/image";
 import Link from "next/link";
 
 const cardCompanies = [
@@ -113,7 +114,7 @@ export default function Home() {
             >
               <span className={`logo-wrap logo-${index + 1}`} aria-hidden="true">
                 {company.logo ? (
-                  <img src={company.logo} alt="" />
+                  <Image src={company.logo} alt="" width={88} height={36} />
                 ) : (
                   <span className="letter-logo">{company.short}</span>
                 )}
