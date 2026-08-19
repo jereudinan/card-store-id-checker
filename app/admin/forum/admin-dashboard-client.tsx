@@ -14,7 +14,7 @@ const dashboardDate = "2026-08-18";
 export default function AdminDashboardClient({ displayName }: { displayName: string }) {
   const [data, setData] = useState<Dashboard | null>(null), [error, setError] = useState("");
   const [directOpen, setDirectOpen] = useState(false), [directTitle, setDirectTitle] = useState(""), [directCategory, setDirectCategory] = useState("tax"), [directInstruction, setDirectInstruction] = useState(""), [pending, setPending] = useState(false);
-  const load = useCallback(() => fetch(`/api/admin/forum/dashboard?date=${dashboardDate}`, { cache: "no-store" }).then(async (response) => { if (!response.ok) throw new Error(); return response.json(); }).then(setData).catch(() => setError("관리자 데이터를 불러오지 못했습니다.")), []);
+  const load = useCallback(() => fetch(`/api/admin/forum/dashboard?date=${dashboardDate}`, { cache: "no-store" }).then(async (response) => { if (!response.ok) throw new Error(); return response.json() as Promise<Dashboard>; }).then(setData).catch(() => setError("관리자 데이터를 불러오지 못했습니다.")), []);
   useEffect(() => { load(); }, [load]);
   const counts = useMemo(() => Object.fromEntries((data?.counts ?? []).map((item) => [item.status, Number(item.count)])), [data]);
   async function chooseTopic(id: number) { setPending(true); const response = await fetch(`/api/admin/forum/topics/${id}/select`, { method: "POST" }); if (!response.ok) setError("주제 선택을 변경하지 못했습니다."); await load(); setPending(false); }

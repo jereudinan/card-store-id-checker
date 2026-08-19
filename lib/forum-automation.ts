@@ -3,10 +3,35 @@ type AutomationAction = "rewrite" | "research" | "verify" | "import_sources";
 type ArticleRecord = Record<string, unknown>;
 type SuggestedSource = { url: string; title: string; publisher: string; kind: "government" | "professional"; note?: string };
 
+const DAILY_AI_JOB_LIMIT = 3;
+const MAX_AI_OUTPUT_TOKENS = 4000;
+
 function json(value: unknown) { return JSON.stringify(value); }
 
 async function createJob(db: D1Database, articleId: number, action: AutomationAction, input: unknown) {
-  const jobType = action === "import_sources" ? "research" : action === "verify" ? "source_check" : action;
+  const jobType = action === "import_sources" ? "source_import" : action === "verify" ? "source_check" : action;
+  if (action === "rewrite" || action === "research") {
+    const result = await db.prepare(`
+      INSERT INTO forum_content_jobs (article_id, job_type, status, input_json, started_at)
+      SELECT ?1, ?2, 'running', ?3, CURRENT_TIMESTAMP
+      WHERE (
+        SELECT COUNT(*) FROM forum_content_jobs
+        WHERE job_type IN ('rewrite', 'research')
+          AND created_at >= datetime('now', '+9 hours', 'start of day', '-9 hours')
+      ) < ?4
+      AND NOT EXISTS (
+        SELECT 1 FROM forum_content_jobs
+        WHERE article_id=?1 AND job_type=?2 AND status IN ('queued', 'running')
+          AND created_at >= datetime('now', '-10 minutes')
+      )
+    `).bind(articleId, jobType, json(input ?? {}), DAILY_AI_JOB_LIMIT).run();
+    if (Number(result.meta.changes ?? 0) === 0) {
+      const duplicate = await db.prepare(`SELECT id FROM forum_content_jobs WHERE article_id=?1 AND job_type=?2 AND status IN ('queued', 'running') AND created_at >= datetime('now', '-10 minutes') LIMIT 1`).bind(articleId, jobType).first();
+      if (duplicate) throw new Error("같은 AI 작업이 이미 진행 중입니다. 완료된 뒤 다시 시도해주세요.");
+      throw new Error(`오늘의 AI 작업 한도 ${DAILY_AI_JOB_LIMIT}회를 모두 사용했습니다. 내일 다시 시도해주세요.`);
+    }
+    return Number(result.meta.last_row_id);
+  }
   const result = await db.prepare(`INSERT INTO forum_content_jobs (article_id, job_type, status, input_json, started_at) VALUES (?1, ?2, 'running', ?3, CURRENT_TIMESTAMP)`).bind(articleId, jobType, json(input ?? {})).run();
   return Number(result.meta.last_row_id);
 }
@@ -37,6 +62,7 @@ async function callOpenAI(apiKey: string | undefined, instructions: string, inpu
     body: json({
       model: "gpt-5.4-nano",
       store: false,
+      max_output_tokens: MAX_AI_OUTPUT_TOKENS,
       instructions,
       input,
       ...(useSearch ? { tools: [{ type: "web_search" }] } : {}),

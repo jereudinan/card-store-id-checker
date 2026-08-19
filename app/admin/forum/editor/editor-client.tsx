@@ -1,33 +1,42 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type BodySection = { type: string; text?: string; title?: string };
 type Source = { id?: number; url: string; title: string; publisher: string; kind: "government" | "professional"; note?: string; last_checked_at?: string | null; changed_at?: string | null };
 type Article = { id: number; title: string; deck: string; category: string; status: string; review_at: string | null; summary_json: string[]; body_json: BodySection[]; sources: Source[] };
 type Proposal = { title?: string; deck?: string; summary?: string[]; body?: BodySection[]; sources?: Source[] };
 type AutomationAction = "rewrite" | "research" | "verify" | "import_sources";
+type AutomationResponse = { article?: Article; error?: string; proposal?: Proposal; checked?: number; changed?: number; failed?: number };
 const actionLabels: Record<AutomationAction, string> = { rewrite: "AI가 쉽게 다시 쓰는 중…", research: "공식 자료를 수집하는 중…", verify: "출처를 다시 확인하는 중…", import_sources: "출처를 반영하는 중…" };
 
 export default function EditorClient({ articleId }: { articleId: number }) {
   const [article, setArticle] = useState<Article | null>(null), [message, setMessage] = useState(""), [saving, setSaving] = useState(false);
   const [running, setRunning] = useState<AutomationAction | null>(null), [proposal, setProposal] = useState<Proposal | null>(null), [automationSummary, setAutomationSummary] = useState("");
-  async function load() { const response = await fetch(`/api/admin/forum/articles/${articleId}`, { cache: "no-store" }); const data = await response.json(); setArticle(data.article ?? null); }
-  useEffect(() => { load(); }, [articleId]);
+  const automationLocked = useRef(false);
+  async function load() { const response = await fetch(`/api/admin/forum/articles/${articleId}`, { cache: "no-store" }); const data = await response.json() as AutomationResponse; setArticle(data.article ?? null); }
+  useEffect(() => {
+    let active = true;
+    fetch(`/api/admin/forum/articles/${articleId}`, { cache: "no-store" })
+      .then((response) => response.json() as Promise<AutomationResponse>)
+      .then((data) => { if (active) setArticle(data.article ?? null); });
+    return () => { active = false; };
+  }, [articleId]);
   async function save() { if (!article) return; setSaving(true); const response = await fetch(`/api/admin/forum/articles/${article.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: article.title, deck: article.deck, summary: article.summary_json, body: article.body_json, reviewAt: article.review_at }) }); setMessage(response.ok ? "수정 내용을 저장했습니다. 다시 검토가 필요합니다." : "저장하지 못했습니다."); setSaving(false); }
   async function publish(scheduledAt?: string) { if (!article) return; setSaving(true); const response = await fetch(`/api/admin/forum/articles/${article.id}/publish`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ scheduledAt: scheduledAt || null }) }); setMessage(response.ok ? (scheduledAt ? "예약 게시했습니다." : "승인 후 게시했습니다.") : "게시하지 못했습니다."); setSaving(false); }
   async function automate(action: AutomationAction, sources?: Source[]) {
-    if (!article) return;
+    if (!article || automationLocked.current) return;
+    automationLocked.current = true;
     setRunning(action); setMessage(""); setAutomationSummary(""); if (action !== "import_sources") setProposal(null);
     try {
       const response = await fetch(`/api/admin/forum/articles/${article.id}/automation`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action, sources }) });
-      const data = await response.json(); if (!response.ok) throw new Error(data.error || "자동화 작업에 실패했습니다.");
-      if (action === "rewrite") { setProposal(data.proposal); setAutomationSummary("재작성 제안이 준비됐습니다. 비교한 뒤 적용하세요."); }
-      if (action === "research") { setProposal(data.proposal); setAutomationSummary(`${data.proposal?.sources?.length ?? 0}개의 공식 자료 후보를 찾았습니다.`); }
+      const data = await response.json() as AutomationResponse; if (!response.ok) throw new Error(data.error || "자동화 작업에 실패했습니다.");
+      if (action === "rewrite") { setProposal(data.proposal ?? null); setAutomationSummary("재작성 제안이 준비됐습니다. 비교한 뒤 적용하세요."); }
+      if (action === "research") { setProposal(data.proposal ?? null); setAutomationSummary(`${data.proposal?.sources?.length ?? 0}개의 공식 자료 후보를 찾았습니다.`); }
       if (action === "verify") { setAutomationSummary(`${data.checked}개 확인 · 변경 ${data.changed}개 · 확인 실패 ${data.failed}개`); await load(); }
       if (action === "import_sources") { setProposal(null); setAutomationSummary("선택한 자료를 출처 목록에 반영했습니다."); await load(); }
-    } catch (error) { setAutomationSummary(error instanceof Error ? error.message : "자동화 작업에 실패했습니다."); } finally { setRunning(null); }
+    } catch (error) { setAutomationSummary(error instanceof Error ? error.message : "자동화 작업에 실패했습니다."); } finally { automationLocked.current = false; setRunning(null); }
   }
   function applyRewrite() { if (!article || !proposal) return; setArticle({ ...article, title: proposal.title ?? article.title, deck: proposal.deck ?? article.deck, summary_json: proposal.summary ?? article.summary_json, body_json: proposal.body ?? article.body_json }); setProposal(null); setMessage("AI 제안을 편집 화면에 반영했습니다. 확인 후 저장하세요."); setAutomationSummary(""); }
   if (!article) return <main className="editor-shell"><div className="forum-empty"><strong>초안을 불러오고 있습니다</strong></div></main>;

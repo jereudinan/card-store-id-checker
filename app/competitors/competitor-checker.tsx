@@ -67,7 +67,7 @@ export default function CompetitorChecker() {
       <div className="competitor-results" aria-live="polite">
         {!result ? <div className="competitor-placeholder"><strong>주변 경쟁업체를 확인해 보세요</strong><p>선택한 반경 안에서 입력한 업종과 관련된 가게를 찾아드립니다.</p></div> : <>
           <header><div><span>{result.radius === 1000 ? "1km" : `${result.radius}m`} 반경</span><h2><strong>{result.stores.length}</strong>곳을 찾았습니다</h2></div><p>공개된 상가업소 {result.scannedCount.toLocaleString()}곳 중 ‘{result.keyword}’ 관련 업종{result.limited ? " · 데이터가 많은 지역은 최대 1만 곳 기준" : ""}</p></header>
-          {result.stores.length === 0 ? <div className="no-stores"><strong>관련 가게를 찾지 못했습니다</strong><p>업종을 ‘커피’, ‘한식’, ‘미용’처럼 바꾸거나 조회 반경을 넓혀보세요.</p></div> : <ol className="store-list">{result.stores.map((store, index) => <li key={store.id || `${store.name}-${index}`}><div className="store-rank">{index + 1}</div><div className="store-copy"><strong>{store.name}</strong><span>{store.category}</span><p>{store.address}</p></div><span className="store-distance">{Number.isFinite(store.latitude) ? `${distanceMeters(location, store)}m` : "거리 정보 없음"}</span></li>)}</ol>}
+          {result.stores.length === 0 ? <div className="no-stores"><strong>관련 가게를 찾지 못했습니다</strong><p>업종을 ‘커피’, ‘한식’, ‘미용’처럼 바꾸거나 조회 반경을 넓혀보세요.</p></div> : <ol className="store-list">{result.stores.map((store, index) => <li key={store.id || `${store.name}-${index}`}><div className="store-rank">{index + 1}</div><div className="store-copy"><strong>{store.name}</strong><span>{store.category}</span><p>{store.address}</p></div><span className="store-distance">{location && Number.isFinite(store.latitude) ? `${distanceMeters(location, store)}m` : "거리 정보 없음"}</span></li>)}</ol>}
         </>}
       </div>
     </section>
