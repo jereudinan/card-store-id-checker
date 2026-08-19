@@ -60,7 +60,7 @@ export async function readAdminDashboard(db: D1Database, date: string) {
     db.prepare(`SELECT s.*, c.name AS category FROM forum_topic_suggestions s JOIN forum_categories c ON c.id = s.category_id WHERE s.suggestion_date = ?1 ORDER BY s.rank`).bind(date),
     db.prepare(`SELECT status, COUNT(*) AS count FROM forum_articles GROUP BY status`),
     db.prepare(`SELECT r.*, a.title AS article_title FROM forum_review_alerts r JOIN forum_articles a ON a.id = r.article_id WHERE r.status = 'open' ORDER BY r.detected_at DESC LIMIT 10`),
-    db.prepare(`SELECT a.id, a.title, a.status, a.updated_at, a.scheduled_at, c.name AS category FROM forum_articles a JOIN forum_categories c ON c.id = a.category_id WHERE a.status != 'archived' ORDER BY a.updated_at DESC LIMIT 10`),
+    db.prepare(`SELECT a.id, a.title, a.status, a.updated_at, a.scheduled_at, c.name AS category FROM forum_articles a JOIN forum_categories c ON c.id = a.category_id WHERE a.status NOT IN ('published', 'archived') ORDER BY a.updated_at DESC LIMIT 10`),
   ]);
   return { topics: topics.results ?? [], counts: counts.results ?? [], alerts: alerts.results ?? [], work: work.results ?? [] };
 }
@@ -72,9 +72,34 @@ export async function readAdminArticle(db: D1Database, id: number) {
 }
 
 export async function selectTopic(db: D1Database, id: number) {
+  const current = await db.prepare(`SELECT id, suggestion_date, selected_at FROM forum_topic_suggestions WHERE id = ?1`).bind(id).first<{ id: number; suggestion_date: string; selected_at: string | null }>();
+  if (!current) return null;
+  if (current.selected_at) {
+    await db.prepare(`UPDATE forum_topic_suggestions SET selected_at = NULL, selection_method = NULL WHERE id = ?1`).bind(id).run();
+    return db.prepare(`SELECT * FROM forum_topic_suggestions WHERE id = ?1`).bind(id).first();
+  }
   const now = new Date().toISOString();
-  await db.prepare(`UPDATE forum_topic_suggestions SET selected_at = ?1, selection_method = 'admin' WHERE id = ?2`).bind(now, id).run();
+  await db.batch([
+    db.prepare(`UPDATE forum_topic_suggestions SET selected_at = NULL, selection_method = NULL WHERE suggestion_date = ?1`).bind(current.suggestion_date),
+    db.prepare(`UPDATE forum_topic_suggestions SET selected_at = ?1, selection_method = 'admin' WHERE id = ?2`).bind(now, id),
+  ]);
   return db.prepare(`SELECT * FROM forum_topic_suggestions WHERE id = ?1`).bind(id).first();
+}
+
+export async function createDirectTopic(db: D1Database, input: { date: string; categorySlug: string; title: string; instruction?: string }) {
+  const title = input.title.trim(), instruction = input.instruction?.trim() ?? "";
+  if (title.length < 2 || title.length > 120) throw new Error("INVALID_TITLE");
+  if (instruction.length > 1000) throw new Error("INVALID_INSTRUCTION");
+  const category = await db.prepare(`SELECT id, name FROM forum_categories WHERE slug=?1 AND is_active=1`).bind(input.categorySlug).first<{ id: number; name: string }>();
+  if (!category) throw new Error("INVALID_CATEGORY");
+  const slug = `direct-${input.date}-${Date.now().toString(36)}`;
+  const articleResult = await db.prepare(`INSERT INTO forum_articles (slug, category_id, status, title, deck, summary_json, body_json, reading_minutes, info_as_of) VALUES (?1, ?2, 'topic', ?3, ?4, '[]', '[]', 1, ?5)`).bind(slug, category.id, title, instruction, input.date).run();
+  const articleId = Number(articleResult.meta.last_row_id);
+  const rankRow = await db.prepare(`SELECT COALESCE(MAX(rank), 0) + 1 AS next_rank FROM forum_topic_suggestions WHERE suggestion_date=?1`).bind(input.date).first<{ next_rank: number }>();
+  const now = new Date().toISOString();
+  const topicResult = await db.prepare(`INSERT INTO forum_topic_suggestions (suggestion_date, rank, category_id, title, reason, score, signals_json, selected_at, selection_method, article_id) VALUES (?1, ?2, ?3, ?4, '관리자 직접 입력', 100, ?5, ?6, 'admin', ?7)`).bind(input.date, rankRow?.next_rank ?? 1, category.id, title, JSON.stringify({ instruction }), now, articleId).run();
+  await db.prepare(`UPDATE forum_topic_suggestions SET selected_at=NULL, selection_method=NULL WHERE suggestion_date=?1 AND id != ?2`).bind(input.date, Number(topicResult.meta.last_row_id)).run();
+  return { id: Number(topicResult.meta.last_row_id), articleId, title, category: category.name };
 }
 
 export async function updateArticle(db: D1Database, id: number, input: { title?: string; deck?: string; summary?: string[]; body?: Record<string, unknown>[]; reviewAt?: string | null; status?: string }) {

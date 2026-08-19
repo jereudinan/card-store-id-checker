@@ -1,5 +1,6 @@
 import schemaMigration from "../drizzle/0000_charming_marauders.sql?raw";
 import seedMigration from "../drizzle/0001_seed_forum_content.sql?raw";
+import cleanupMigration from "../drizzle/0002_clear_sample_work.sql?raw";
 
 function statements(sql: string) {
   return sql.split("--> statement-breakpoint").map((statement) => statement.trim()).filter(Boolean);
@@ -13,5 +14,9 @@ export async function ensureForumDatabase(db: D1Database) {
   const seeded = await db.prepare("SELECT id FROM forum_articles WHERE slug='tax-credit-2026' LIMIT 1").first();
   if (!seeded) {
     for (const statement of statements(seedMigration)) await db.prepare(statement).run();
+  }
+  const sampleWork = await db.prepare("SELECT id FROM forum_articles WHERE slug IN ('vat-review-draft','funding-scheduled') LIMIT 1").first();
+  if (sampleWork) {
+    for (const statement of statements(cleanupMigration)) await db.prepare(statement).run();
   }
 }

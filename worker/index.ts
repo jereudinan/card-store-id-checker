@@ -3,7 +3,7 @@ import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } fr
 import handler from "vinext/server/app-router-entry";
 import { extractPublicDataError } from "../lib/public-data-errors";
 import { NearbyStoresApiError, queryNearbyStores } from "../lib/nearby-stores";
-import { publishArticle, readAdminArticle, readAdminDashboard, readPublishedArticle, readPublishedArticles, recordForumSearch, selectTopic, updateArticle } from "../db/forum-runtime";
+import { createDirectTopic, publishArticle, readAdminArticle, readAdminDashboard, readPublishedArticle, readPublishedArticles, recordForumSearch, selectTopic, updateArticle } from "../db/forum-runtime";
 import { ensureForumDatabase } from "../db/forum-init";
 
 interface Env {
@@ -67,6 +67,12 @@ const worker = {
         }
         const topicMatch = url.pathname.match(/^\/api\/admin\/forum\/topics\/(\d+)\/select$/);
         if (topicMatch && request.method === "POST") return Response.json({ topic: await selectTopic(env.DB, Number(topicMatch[1])) });
+        if (url.pathname === "/api/admin/forum/topics/direct" && request.method === "POST") {
+          const body = await request.json() as { date?: string; categorySlug?: string; title?: string; instruction?: string };
+          if (!/^\d{4}-\d{2}-\d{2}$/.test(body.date ?? "")) return Response.json({ error: "기준 날짜를 확인해주세요." }, { status: 400 });
+          try { return Response.json({ topic: await createDirectTopic(env.DB, { date: body.date!, categorySlug: body.categorySlug ?? "", title: body.title ?? "", instruction: body.instruction }) }, { status: 201 }); }
+          catch (error) { if (error instanceof Error && error.message.startsWith("INVALID_")) return Response.json({ error: "입력한 주제 내용을 확인해주세요." }, { status: 400 }); throw error; }
+        }
         const publishMatch = url.pathname.match(/^\/api\/admin\/forum\/articles\/(\d+)\/publish$/);
         if (publishMatch && request.method === "POST") {
           const body = await request.json().catch(() => ({})) as { scheduledAt?: string | null };

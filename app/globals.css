@@ -14,11 +14,19 @@
 .editor-document section textarea { min-height: 62px; }.editor-document section li textarea { min-height: 48px; }
 .editor-deck-input:focus, .editor-document section textarea:focus { border-color: rgba(109,114,195,.35); background: #fafafe; }
 .article-data-table { margin-top: 20px; overflow-x: auto; }.article-data-table table { width: 100%; border-collapse: collapse; background: white; }.article-data-table th, .article-data-table td { padding: 12px; border: 1px solid #e8e7ea; font-size: 12px; text-align: left; }
+.direct-topic-form { display: grid; gap: 12px; margin-top: 14px; padding: 18px; border: 1px solid rgba(109,114,195,.25); border-radius: 12px; background: #f8f8fd; }
+.direct-topic-form > div:first-child { display: grid; grid-template-columns: minmax(140px,.35fr) minmax(0,1fr); gap: 10px; }
+.direct-topic-form label { display: grid; gap: 6px; color: #65626c; font-size: 10px; font-weight: 800; }
+.direct-topic-form input, .direct-topic-form select, .direct-topic-form textarea { width: 100%; padding: 10px 11px; border: 1px solid #dcdbe2; border-radius: 8px; outline: 0; color: #45434c; background: white; font: inherit; font-size: 10px; }
+.direct-topic-form textarea { min-height: 76px; resize: vertical; }.direct-topic-form input:focus, .direct-topic-form select:focus, .direct-topic-form textarea:focus { border-color: #6d72c3; box-shadow: 0 0 0 3px rgba(109,114,195,.12); }
+.direct-topic-form > div:last-child { display: flex; justify-content: flex-end; gap: 7px; }.direct-topic-form button { padding: 9px 13px; border: 1px solid #d9d8de; border-radius: 8px; color: #68656f; background: white; font: inherit; font-size: 10px; font-weight: 800; cursor: pointer; }.direct-topic-form button[type="submit"] { color: white; border-color: #555aa9; background: #555aa9; }.direct-topic-form button:disabled { opacity: .5; cursor: not-allowed; }
+.work-empty { padding: 28px 12px !important; color: #97949d !important; line-height: 1.6; text-align: center !important; }
 
 @media (max-width: 720px) {
   .forum-search button { min-height: 42px; font-size: 14px; }
   .editor-deck-input, .editor-document section textarea { font-size: 15px; }
   .article-data-table th, .article-data-table td { font-size: 14px; }
+  .direct-topic-form > div:first-child { grid-template-columns: 1fr; }.direct-topic-form label, .direct-topic-form input, .direct-topic-form select, .direct-topic-form textarea, .direct-topic-form button { font-size: 14px; }
 }
 
 * {

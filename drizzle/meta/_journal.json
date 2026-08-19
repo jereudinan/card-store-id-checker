@@ -15,6 +15,13 @@
       "when": 1787030400000,
       "tag": "0001_seed_forum_content",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1787101200000,
+      "tag": "0002_clear_sample_work",
+      "breakpoints": true
     }
   ]
 }
