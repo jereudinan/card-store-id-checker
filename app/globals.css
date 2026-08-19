@@ -29,6 +29,66 @@
   .direct-topic-form > div:first-child { grid-template-columns: 1fr; }.direct-topic-form label, .direct-topic-form input, .direct-topic-form select, .direct-topic-form textarea, .direct-topic-form button { font-size: 14px; }
 }
 
+/* Desktop fluid typography: scale supporting copy with viewport width. */
+@media (min-width: 721px) {
+  .site-nav a { font-size: clamp(13px, .72vw, 15px); }
+  .hero p, .calculator-hero p, .business-status-hero p, .competitor-hero p { font-size: clamp(14px, .86vw, 17px); line-height: 1.65; }
+  .eyebrow, .about-kicker, .tool-heading > span, .competitor-hero > span { font-size: clamp(11px, .66vw, 13px); }
+  .card-copy strong { font-size: clamp(16px, .9vw, 18px); }
+  .merchant-phone { font-size: clamp(13px, .75vw, 15px); }.merchant-phone span { font-size: clamp(11px, .66vw, 13px); }
+  .lookup-button, .primary-link, .contact-box > a { font-size: clamp(13px, .75vw, 15px); }
+  footer { font-size: clamp(12px, .7vw, 14px); }
+  .about-nav { font-size: clamp(13px, .75vw, 15px); }.about-hero p { font-size: clamp(16px, 1vw, 19px); }
+  .feature-list strong, .business-info-grid h2 { font-size: clamp(15px, .84vw, 17px); }
+  .feature-list p, .notice-box p, .contact-box p { font-size: clamp(14px, .82vw, 16px); }
+  .company-tags li { font-size: clamp(13px, .75vw, 15px); }
+  .business-form-panel > p, .tool-heading p { font-size: clamp(13px, .74vw, 15px); line-height: 1.65; }
+  .business-form-panel label, .competitor-form > label, .competitor-form legend { font-size: clamp(13px, .75vw, 15px); }
+  .business-input-row button, .business-reset, .competitor-actions button { font-size: clamp(13px, .74vw, 15px); }
+  .result-placeholder span, .competitor-placeholder p, .no-stores p { font-size: clamp(13px, .75vw, 15px); }
+  .business-result-head span, .business-result-list dt, .store-copy span, .store-distance { font-size: clamp(12px, .7vw, 14px); }
+  .result-value-description, .store-copy p { font-size: clamp(12px, .68vw, 14px); }
+  .business-info-grid p, .business-source-note p, .business-source-note a, .competitor-guide p, .competitor-source p, .competitor-source a { font-size: clamp(12px, .7vw, 14px); }
+  .calculator-form label, .calculator-notice ul, .source-note, .fee-guide table { font-size: clamp(13px, .74vw, 15px); }
+  .fee-guide th { font-size: clamp(12px, .68vw, 14px); }.calculator-actions button, .lookup-links a { font-size: clamp(13px, .75vw, 15px); }
+
+  .forum-kicker { font-size: clamp(12px, .68vw, 14px); }.forum-hero > p { font-size: clamp(16px, .95vw, 19px); }
+  .trust-row { font-size: clamp(13px, .75vw, 15px); }.forum-search input { font-size: clamp(15px, .88vw, 17px); }
+  .forum-search button, .forum-categories button { font-size: clamp(13px, .75vw, 15px); }
+  .forum-section-head span, .forum-principle span, .related > div > span { font-size: clamp(11px, .62vw, 13px); }
+  .forum-section-head > p { font-size: clamp(13px, .72vw, 15px); }.article-meta span, .article-meta time { font-size: clamp(12px, .68vw, 14px); }
+  .forum-article h3 { font-size: clamp(22px, 1.35vw, 27px); }.forum-article > p { font-size: clamp(15px, .9vw, 18px); }
+  .article-footer small { font-size: clamp(11px, .64vw, 13px); }.article-footer strong { font-size: clamp(13px, .74vw, 15px); }
+  .forum-empty p, .forum-principle p { font-size: clamp(14px, .82vw, 16px); }
+
+  .article-breadcrumb { font-size: clamp(13px, .72vw, 15px); }.article-title > span { font-size: clamp(12px, .66vw, 14px); }
+  .article-title > p { font-size: clamp(16px, .95vw, 19px); }.article-title > div { font-size: clamp(12px, .68vw, 14px); }
+  .article-summary > strong { font-size: clamp(14px, .8vw, 16px); }.article-summary ol { font-size: clamp(15px, .88vw, 17px); }
+  .article-body p { font-size: clamp(16px, .95vw, 19px); }.info-diagram span, .info-diagram small { font-size: clamp(11px, .64vw, 13px); }.info-diagram strong { font-size: clamp(14px, .8vw, 16px); }
+  .article-callout strong { font-size: clamp(13px, .74vw, 15px); }.article-callout p { font-size: clamp(14px, .82vw, 16px); }
+  .article-side span { font-size: clamp(11px, .62vw, 13px); }.article-side strong { font-size: clamp(13px, .76vw, 15px); }.article-side a { font-size: clamp(12px, .7vw, 14px); }
+  .related small { font-size: clamp(11px, .62vw, 13px); }.related strong { font-size: clamp(14px, .82vw, 16px); }
+
+  .admin-shell { grid-template-columns: clamp(220px, 15vw, 260px) minmax(0,1fr); }
+  .admin-brand strong { font-size: clamp(15px, .88vw, 18px); }.admin-brand span, .admin-user span { font-size: clamp(11px, .62vw, 13px); }
+  .admin-sidebar nav > span { font-size: clamp(10px, .56vw, 12px); }.admin-sidebar nav a { font-size: clamp(13px, .74vw, 15px); }
+  .admin-user strong { font-size: clamp(12px, .68vw, 14px); }.admin-top p { font-size: clamp(12px, .68vw, 14px); }.admin-top > a { font-size: clamp(12px, .7vw, 14px); }
+  .admin-status span { font-size: clamp(12px, .7vw, 14px); }.admin-status small, .admin-status em { font-size: clamp(11px, .62vw, 13px); }
+  .admin-section-title span { font-size: clamp(10px, .58vw, 12px); }.admin-section-title h2 { font-size: clamp(19px, 1.08vw, 22px); }.admin-section-title p { font-size: clamp(12px, .7vw, 14px); line-height: 1.55; }
+  .deadline strong { font-size: clamp(19px, 1.08vw, 22px); }.topic-rank { font-size: clamp(13px, .72vw, 15px); }
+  .topic-list small, .topic-list em { font-size: clamp(10px, .58vw, 12px); }.topic-list h3 { font-size: clamp(14px, .82vw, 16px); line-height: 1.4; }.topic-list p { font-size: clamp(12px, .68vw, 14px); line-height: 1.45; }
+  .topic-list button, .topic-actions button, .topic-actions > a { font-size: clamp(12px, .68vw, 14px); }
+  .work-list table { font-size: clamp(12px, .68vw, 14px); }.work-list th { font-size: clamp(11px, .62vw, 13px); }.work-list td strong { font-size: clamp(12px, .7vw, 14px); }.status { font-size: clamp(10px, .58vw, 12px); }
+  .admin-alerts li strong { font-size: clamp(12px, .68vw, 14px); }.admin-alerts li p, .admin-alerts li > span { font-size: clamp(11px, .62vw, 13px); }
+  .direct-topic-form label, .direct-topic-form input, .direct-topic-form select, .direct-topic-form textarea, .direct-topic-form button { font-size: clamp(12px, .68vw, 14px); }
+
+  .editor-top > a, .editor-top button { font-size: clamp(12px, .68vw, 14px); }.editor-top span, .editor-top small { font-size: clamp(11px, .62vw, 13px); }
+  .editor-outline > strong, .editor-outline > a, .editor-outline label, .editor-outline select, .editor-outline input { font-size: clamp(11px, .62vw, 13px); }
+  .editor-label { font-size: clamp(10px, .58vw, 12px); }.editor-deck-input, .editor-document section textarea { font-size: clamp(14px, .82vw, 16px); }
+  .editor-document ol, .editor-document p { font-size: clamp(14px, .82vw, 16px); }.editor-assistant > div span, .editor-assistant > strong { font-size: clamp(13px, .74vw, 15px); }
+  .editor-assistant > p, .editor-assistant button, .editor-assistant > a, .editor-note { font-size: clamp(11px, .64vw, 13px); line-height: 1.55; }
+}
+
 * {
   box-sizing: border-box;
 }
