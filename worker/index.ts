@@ -12,6 +12,7 @@ interface Env {
   DB?: D1Database;
   DATA_GO_KR_SERVICE_KEY?: string;
   OPENAI_API_KEY?: string;
+  ADMIN_USER_IDS?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -36,6 +37,11 @@ const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
+    if (url.pathname.startsWith("/admin/forum") || url.pathname.startsWith("/api/admin/forum/")) {
+      const denied = authorizeForumAdmin(request, env, url);
+      if (denied) return denied;
+    }
+
     if (url.pathname === "/api/forum/articles" && request.method === "GET") {
       if (!env.DB) return Response.json({ error: "콘텐츠 데이터베이스를 준비하고 있습니다." }, { status: 503 });
       try {
@@ -58,8 +64,6 @@ const worker = {
     }
 
     if (url.pathname.startsWith("/api/admin/forum/")) {
-      const isLocalRequest = ["localhost", "127.0.0.1", "::1"].includes(url.hostname);
-      if (!request.headers.get("oai-authenticated-user-email") && !isLocalRequest) return Response.json({ error: "로그인이 필요합니다." }, { status: 401 });
       if (!env.DB) return Response.json({ error: "콘텐츠 데이터베이스를 준비하고 있습니다." }, { status: 503 });
       try {
         await ensureForumDatabase(env.DB);
@@ -166,5 +170,36 @@ const worker = {
     return handler.fetch(request, env, ctx);
   },
 };
+
+function authorizeForumAdmin(request: Request, env: Env, url: URL): Response | null {
+  if (["localhost", "127.0.0.1", "::1"].includes(url.hostname)) return null;
+
+  const allowedUserIds = new Set(
+    (env.ADMIN_USER_IDS ?? "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean),
+  );
+  if (allowedUserIds.size === 0) {
+    return Response.json({ error: "관리자 계정 설정이 필요합니다." }, { status: 503 });
+  }
+
+  const userId = request.headers.get("oai-authenticated-user-id");
+  if (!userId) {
+    if (url.pathname.startsWith("/api/")) {
+      return Response.json({ error: "로그인이 필요합니다." }, { status: 401 });
+    }
+    const returnTo = `${url.pathname}${url.search}`;
+    return Response.redirect(
+      new URL(`/signin-with-chatgpt?return_to=${encodeURIComponent(returnTo)}`, url.origin),
+      302,
+    );
+  }
+
+  if (!allowedUserIds.has(userId)) {
+    return Response.json({ error: "관리자 권한이 없습니다." }, { status: 403 });
+  }
+  return null;
+}
 
 export default worker;

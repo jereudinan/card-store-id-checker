@@ -208,3 +208,15 @@ test("caps forum AI cost and blocks duplicate automation requests", async () => 
   assert.match(automation, /max_output_tokens: MAX_AI_OUTPUT_TOKENS/);
   assert.match(editor, /automationLocked\.current/);
 });
+
+test("keeps forum admin routes owner-only when the site is public", async () => {
+  const worker = await readFile(new URL("../worker/index.ts", import.meta.url), "utf8");
+
+  assert.match(worker, /url\.pathname\.startsWith\("\/admin\/forum"\)/);
+  assert.match(worker, /url\.pathname\.startsWith\("\/api\/admin\/forum\/"\)/);
+  assert.match(worker, /request\.headers\.get\("oai-authenticated-user-id"\)/);
+  assert.match(worker, /env\.ADMIN_USER_IDS/);
+  assert.match(worker, /allowedUserIds\.has\(userId\)/);
+  assert.match(worker, /status: 403/);
+  assert.match(worker, /status: 503/);
+});
