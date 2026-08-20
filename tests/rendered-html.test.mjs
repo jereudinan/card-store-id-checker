@@ -214,9 +214,9 @@ test("keeps forum admin routes owner-only when the site is public", async () => 
 
   assert.match(worker, /url\.pathname\.startsWith\("\/admin\/forum"\)/);
   assert.match(worker, /url\.pathname\.startsWith\("\/api\/admin\/forum\/"\)/);
-  assert.match(worker, /request\.headers\.get\("oai-authenticated-user-id"\)/);
-  assert.match(worker, /env\.ADMIN_USER_IDS/);
-  assert.match(worker, /allowedUserIds\.has\(userId\)/);
+  assert.match(worker, /request\.headers\.get\("oai-authenticated-user-email"\)/);
+  assert.match(worker, /env\.ADMIN_EMAILS/);
+  assert.match(worker, /allowedEmails\.has\(userEmail\)/);
   assert.match(worker, /status: 403/);
   assert.match(worker, /status: 503/);
 });

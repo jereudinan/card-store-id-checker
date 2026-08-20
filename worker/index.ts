@@ -12,7 +12,7 @@ interface Env {
   DB?: D1Database;
   DATA_GO_KR_SERVICE_KEY?: string;
   OPENAI_API_KEY?: string;
-  ADMIN_USER_IDS?: string;
+  ADMIN_EMAILS?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -174,18 +174,18 @@ const worker = {
 function authorizeForumAdmin(request: Request, env: Env, url: URL): Response | null {
   if (["localhost", "127.0.0.1", "::1"].includes(url.hostname)) return null;
 
-  const allowedUserIds = new Set(
-    (env.ADMIN_USER_IDS ?? "")
+  const allowedEmails = new Set(
+    (env.ADMIN_EMAILS ?? "")
       .split(",")
-      .map((value) => value.trim())
+      .map((value) => value.trim().toLowerCase())
       .filter(Boolean),
   );
-  if (allowedUserIds.size === 0) {
+  if (allowedEmails.size === 0) {
     return Response.json({ error: "관리자 계정 설정이 필요합니다." }, { status: 503 });
   }
 
-  const userId = request.headers.get("oai-authenticated-user-id");
-  if (!userId) {
+  const userEmail = request.headers.get("oai-authenticated-user-email")?.trim().toLowerCase();
+  if (!userEmail) {
     if (url.pathname.startsWith("/api/")) {
       return Response.json({ error: "로그인이 필요합니다." }, { status: 401 });
     }
@@ -196,7 +196,7 @@ function authorizeForumAdmin(request: Request, env: Env, url: URL): Response | n
     );
   }
 
-  if (!allowedUserIds.has(userId)) {
+  if (!allowedEmails.has(userEmail)) {
     return Response.json({ error: "관리자 권한이 없습니다." }, { status: 403 });
   }
   return null;
